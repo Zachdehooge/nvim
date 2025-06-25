@@ -10,6 +10,8 @@
 * `p` - paste
 * `u` - undo
 * `<C-r>` - redo
+* `:%s/old_text/new_text/g` - find and replace
+* `/` - find
 
 ![image](https://github.com/user-attachments/assets/dbbcb367-464f-4407-b89f-83e79b6be0ee)
 
