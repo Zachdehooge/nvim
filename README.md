@@ -4,4 +4,4 @@
   - Run Mason Install All after rust compiler is installed
 
 ## Commands
-<leader>xx - TodoTelescope
+`<leader>xx` - TodoTelescope
