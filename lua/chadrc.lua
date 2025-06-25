@@ -5,7 +5,8 @@
 local M = {}
 M.base46 = {
 	theme = "bearded-arc",
-
+  -- theme = "onedark",
+  dashboard = true,
 	-- hl_override = {
 	-- 	Comment = { italic = true },
 	-- 	["@comment"] = { italic = true },
