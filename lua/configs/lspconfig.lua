@@ -43,6 +43,42 @@ lspconfig.gopls.setup{
   },
 
 }
+
+-- In your lua/configs/lspconfig.lua or similar file
+local on_attach = function(client, bufnr)
+  -- Your existing on_attach code...
+  
+  -- Enable inlay hints if supported
+  if client.server_capabilities.inlayHintProvider then
+    vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+  end
+end
+
+-- Or enable globally for all buffers
+vim.api.nvim_create_autocmd("LspAttach", {
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if client and client.server_capabilities.inlayHintProvider then
+      vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
+    end
+  end,
+})
+
+-- Optional: Add a keybinding to toggle inlay hints
+vim.keymap.set('n', '<leader>ih', function()
+  vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+end, { desc = 'Toggle inlay hints' })
+
+require('lspconfig').rust_analyzer.setup({
+  settings = {
+    ['rust-analyzer'] = {
+      inlayHints = {
+        enable = true,
+      },
+    },
+  },
+})
+
 -- configuring single server, example: typescript
 -- lspconfig.tsserver.setup {
 --   on_attach = nvlsp.on_attach,

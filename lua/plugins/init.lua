@@ -63,9 +63,73 @@ return {
       desc = "Diagnostics (Trouble)",
     },
   },
-},
+  },
+ 
+  {
+    "rachartier/tiny-inline-diagnostic.nvim",
+    event = "VeryLazy", -- Or `LspAttach`
+    priority = 1000, -- needs to be loaded in first
+    config = function()
+        require('tiny-inline-diagnostic').setup()
+        vim.diagnostic.config({ virtual_text = false }) -- Only if needed in your configuration, if you already have native LSP diagnostics
+    end
+  },
 
-   -- {
+  {
+    "mason-org/mason-lspconfig.nvim",
+    opts = {},
+    dependencies = {
+        { "mason-org/mason.nvim", opts = {} },
+        "neovim/nvim-lspconfig",
+    },
+  },
+
+  {
+  "rachartier/tiny-inline-diagnostic.nvim",
+  event = "VeryLazy",
+  config = function()
+    require('tiny-inline-diagnostic').setup({
+      signs = {
+        left = "",
+        right = "",
+        diag = "●",
+        arrow = "    ",
+        up_arrow = "    ",
+        vertical = " │",
+        vertical_end = " └"
+      },
+      hi = {
+        error = "DiagnosticError",
+        warn = "DiagnosticWarn",
+        info = "DiagnosticInfo",
+        hint = "DiagnosticHint",
+        arrow = "NonText",
+        background = "CursorLine", -- Can be a highlight or a hexadecimal color (#RRGGBB)
+        mixing_color = "None", -- Can be None or a hexadecimal color (#RRGGBB). Used to blend the background color with the diagnostic background color with another color.
+      },
+      blend = {
+        factor = 0.27,
+      },
+      options = {
+        -- Show the source of the diagnostic
+        show_source = false,
+        -- Throttle the update of the diagnostic when moving cursor, in milliseconds.
+        -- You can increase it if you have performance issues.
+        -- Or set it to 0 to have better visuals.
+        throttle = 20,
+        -- The minimum length of the message, otherwise it will be on a new line.
+        softwrap = 15,
+        -- If multiple diagnostics are under the cursor, display all of them.
+        multiple_diag_under_cursor = false,
+        -- Enable diagnostic message on all lines.
+        multilines = false,
+        -- Show all diagnostics on the cursor line.
+        show_all_diags_on_cursorline = false,
+      }
+    })
+  end
+  },
+  -- {
   -- 'vyfor/cord.nvim',
   -- build = './build || .\\build',
   -- event = 'VeryLazy',
