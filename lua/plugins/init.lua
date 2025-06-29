@@ -136,21 +136,6 @@ return {
 		opts = {},
 	},
 
-	-- {
-	-- 	"rcarriga/nvim-notify",
-	-- 	event = "VeryLazy", -- disables lazy‑loading
-	-- 	opts = {
-	-- 		stages = "fade",
-	-- 		timeout = 3000,
-	-- 		background_colour = "#000000",
-	-- 	},
-	-- 	config = function(_, opts)
-	-- 		local notify = require("notify")
-	-- 		notify.setup(opts)
-	-- 		vim.notify = notify -- global override
-	-- 	end,
-	-- },
-
 	{
 		"folke/noice.nvim",
 		dependencies = {
@@ -169,20 +154,4 @@ return {
 			})
 		end,
 	},
-	-- {
-	-- 'vyfor/cord.nvim',
-	-- build = './build || .\\build',
-	-- event = 'VeryLazy',
-	-- opts = {}, -- calls require('cord').setup()
-	-- },
-
-	-- {
-	-- 	"nvim-treesitter/nvim-treesitter",
-	-- 	opts = {
-	-- 		ensure_installed = {
-	-- 			"vim", "lua", "vimdoc",
-	--      "html", "css"
-	-- 		},
-	-- 	},
-	-- },
 }
