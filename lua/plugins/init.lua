@@ -1,4 +1,3 @@
-File not found - C:\Users\Zacha\AppData\Local\Temp\doskey-macros.txt
 return {
 	{
 		"stevearc/conform.nvim",
@@ -135,7 +134,20 @@ return {
 	{
 		"stevearc/conform.nvim",
 		opts = {},
-  },
+	},
+
+	{
+		"rcarriga/nvim-notify",
+		config = function()
+			vim.notify = require("notify")
+			require("notify").setup({
+				stages = "fade",
+				timeout = 3000,
+				render = "default",
+				background_colour = "#000000",
+			})
+		end,
+	},
 	-- {
 	-- 'vyfor/cord.nvim',
 	-- build = './build || .\\build',
