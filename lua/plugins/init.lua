@@ -136,15 +136,36 @@ return {
 		opts = {},
 	},
 
+	-- {
+	-- 	"rcarriga/nvim-notify",
+	-- 	event = "VeryLazy", -- disables lazy‑loading
+	-- 	opts = {
+	-- 		stages = "fade",
+	-- 		timeout = 3000,
+	-- 		background_colour = "#000000",
+	-- 	},
+	-- 	config = function(_, opts)
+	-- 		local notify = require("notify")
+	-- 		notify.setup(opts)
+	-- 		vim.notify = notify -- global override
+	-- 	end,
+	-- },
+
 	{
-		"rcarriga/nvim-notify",
+		"folke/noice.nvim",
+		dependencies = {
+			"MunifTanjim/nui.nvim",
+			"rcarriga/nvim-notify",
+		},
 		config = function()
-			vim.notify = require("notify")
-			require("notify").setup({
-				stages = "fade",
-				timeout = 3000,
-				render = "default",
-				background_colour = "#000000",
+			require("noice").setup({
+				presets = {
+					bottom_search = true,
+					command_palette = true,
+					long_message_to_split = true,
+					inc_rename = false,
+					lsp_doc_border = true,
+				},
 			})
 		end,
 	},
