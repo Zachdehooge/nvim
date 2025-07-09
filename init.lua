@@ -66,11 +66,12 @@ config = function(_, opts)
 	vim.notify = notify -- global override
 end
 
-local timer = vim.loop.new_timer()
-timer:start(
-	1000,
-	60000,
-	vim.schedule_wrap(function()
-		vim.cmd("silent! WeatherNow")
-	end)
-)
+-- Uncomment below to allow weather notifier to make a notify every 60 seconds
+-- local timer = vim.loop.new_timer()
+-- timer:start(
+-- 	1000,
+-- 	60000,
+-- 	vim.schedule_wrap(function()
+-- 		vim.cmd("silent! WeatherNow")
+-- 	end)
+-- )
