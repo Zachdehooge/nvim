@@ -65,3 +65,12 @@ config = function(_, opts)
 	notify.setup(opts)
 	vim.notify = notify -- global override
 end
+
+local timer = vim.loop.new_timer()
+timer:start(
+	1000,
+	60000,
+	vim.schedule_wrap(function()
+		vim.cmd("silent! WeatherNow")
+	end)
+)

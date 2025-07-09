@@ -33,8 +33,8 @@ return {
 						break
 					end
 				end
-
-				lualine.setup(config)
+				require("weather.notify").start()
+				require("weather.lualine")
 			end,
 		})
 	end,
