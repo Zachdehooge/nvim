@@ -19,10 +19,11 @@ local ok_weather, weather = pcall(require, "weather")
 if ok_weather then
 	-- Subscribe only once per NVim session
 	if not vim.g._weather_subscribed then
-		vim.g._weather_last_temp = "" -- nothing until first success
+		vim.g._weather_last_temp = "⏳" -- nothing until first success
 		weather:subscribe("lualine_persist", function(update)
 			if update.success and update.success.data then
-				vim.g._weather_last_temp = update.success.data.temp or vim.g._weather_last_temp
+				local d = update.success.data
+				vim.g._weather_last_temp = (d.condition_icon or "") .. "  " .. (d.temp or "")
 			end
 			-- trigger an immediate status‑line refresh
 			vim.schedule(function()
