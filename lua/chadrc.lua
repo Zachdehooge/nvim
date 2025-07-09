@@ -4,8 +4,8 @@
 ---@type ChadrcConfig
 local M = {}
 M.base46 = {
-	theme = "bearded-arc",
-	-- theme = "onedark",
+	--theme = "bearded-arc",
+	theme = "doomchad",
 	dashboard = true,
 	-- hl_override = {
 	-- 	Comment = { italic = true },
