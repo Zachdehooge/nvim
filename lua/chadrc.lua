@@ -3,8 +3,12 @@
 ---@type ChadrcConfig
 local M = {}
 M.base46 = {
-	theme = "bearded-arc",
+	--theme = "cappuccin2",
+	--theme = "bearded-arc",
 	--theme = "doomchad",
+	--theme = "gruvchad",
+	--theme = "tokyonight"
+	theme = "catppuccin2",
 	dashboard = true,
 	-- hl_override = {
 	-- 	Comment = { italic = true },
@@ -23,7 +27,7 @@ if ok_weather then
 		weather:subscribe("lualine_persist", function(update)
 			if update.success and update.success.data then
 				local d = update.success.data
-				vim.g._weather_last_temp = (d.condition_icon or "") .. "  " .. (d.temp or "")
+				vim.g._weather_last_temp = (d.condition_icon or "") .. (d.temp or "")
 			end
 			-- trigger an immediate status‑line refresh
 			vim.schedule(function()
