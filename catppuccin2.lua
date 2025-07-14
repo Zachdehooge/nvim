@@ -1,6 +1,7 @@
 -- The following is a cappuccin and gruvbox mesh
--- This needs to go in the /Users/username/.local/share/nvim/lazy/base46/lua/base46/themes (or equivalent that holds the themes for nvchad)
-
+-- This needs to go in the 
+-- /Users/username/.local/share/nvim/lazy/base46/lua/base46/themes on Macos/Linux
+-- C:\Users\username\AppData\Local\nvim-data\lazy\base46\lua\base46\themes on Windows
 -- lua/themes/catppuccin.lua
 
 local M = {}
