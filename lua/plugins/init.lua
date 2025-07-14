@@ -194,4 +194,8 @@ return {
 		"stevearc/overseer.nvim",
 		opts = {},
 	},
+	{
+		"github/copilot.vim",
+		opts = {},
+	},
 }
