@@ -11,7 +11,8 @@
 * `<C-r>` - redo
 * `:%s/old_text/new_text` - find and replace (add a `.` before or after the text to encompass the space)
 * `/` - find
-* `f6` - open compiler menu to run program
+* `f5` - overseertoggle
+* `f6` - overseerrun
 
 ![image](https://github.com/user-attachments/assets/dbbcb367-464f-4407-b89f-83e79b6be0ee)
 

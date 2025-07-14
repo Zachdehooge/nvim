@@ -81,3 +81,7 @@ require("smear_cursor").setup({
 })
 
 -- require("lsp_lines").setup({})
+
+require("overseer").setup({
+	templates = { "builtin", "user.go_run" },
+})
