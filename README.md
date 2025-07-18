@@ -13,6 +13,6 @@
 * `/` - find
 * `f5` - overseertoggle
 * `f6` - overseerrun
-
+* `:%s/old_word/new_word/g` - find and replace all
 ![image](https://github.com/user-attachments/assets/dbbcb367-464f-4407-b89f-83e79b6be0ee)
 
