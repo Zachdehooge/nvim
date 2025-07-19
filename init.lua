@@ -85,3 +85,5 @@ require("smear_cursor").setup({
 require("overseer").setup({
 	templates = { "builtin", "user.go_run" },
 })
+
+require("lspconfig").zls.setup({})
