@@ -83,7 +83,7 @@ require("smear_cursor").setup({
 -- require("lsp_lines").setup({})
 
 require("overseer").setup({
-	templates = { "builtin", "user.go_run" },
+	templates = { "builtin", "user.go_run", "user.zig_run", "user.zigbuild_run" },
 })
 
 require("lspconfig").zls.setup({})
