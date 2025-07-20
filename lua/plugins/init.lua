@@ -195,7 +195,7 @@ return {
 		opts = {},
 	},
 	{
-		"github/copilot.vim",
+		"zbirenbaum/copilot.lua",
 		opts = {},
 	},
 }
