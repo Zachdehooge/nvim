@@ -8,7 +8,7 @@ map("i", "jk", "<ESC>")
 map("n", "A-j", "<cmd> TodoTelescope <cr>")
 
 -- Accept current Copilot suggestion
-map("i", "<Tab>", function()
+map("i", "<C-l>", function()
 	require("copilot.suggestion").accept()
 end, { desc = "Accept Copilot suggestion" })
 
