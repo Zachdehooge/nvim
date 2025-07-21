@@ -194,8 +194,20 @@ return {
 		"stevearc/overseer.nvim",
 		opts = {},
 	},
+	-- {
+	-- 	"zbirenbaum/copilot.lua",
+	-- 	opts = {},
+	-- },
 	{
 		"zbirenbaum/copilot.lua",
-		opts = {},
+		event = "InsertEnter",
+		cmd = "Copilot",
+		build = ":Copilot auth",
+		config = function()
+			require("copilot").setup({
+				suggestion = { enabled = true, auto_trigger = true },
+				panel = { enabled = false },
+			})
+		end,
 	},
 }

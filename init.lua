@@ -87,8 +87,3 @@ require("overseer").setup({
 })
 
 require("lspconfig").zls.setup({})
-
-require("copilot").setup({
-	suggestion = { enabled = true, auto_trigger = true },
-	panel = { enabled = false },
-})
