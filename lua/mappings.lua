@@ -8,7 +8,7 @@ map("i", "jk", "<ESC>")
 map("n", "A-j", "<cmd> TodoTelescope <cr>")
 
 -- Accept current Copilot suggestion
-map("i", "<C-l>", function()
+map("i", "<Tab>", function()
 	require("copilot.suggestion").accept()
 end, { desc = "Accept Copilot suggestion" })
 
@@ -28,15 +28,14 @@ map("i", "<C-x>", function()
 end, { desc = "Dismiss Copilot suggestion" })
 
 vim.keymap.set("i", "<Esc>", "<Esc>", {
-  desc = "Force exit insert mode",
-  noremap = true,
-  silent = true,
+	desc = "Force exit insert mode",
+	noremap = true,
+	silent = true,
 })
 
--- Compiler mappings
 -- Open compiler
---vim.api.nvim_set_keymap("n", "<F5>", "<cmd>OverseerToggle<cr>", { noremap = true, silent = true })
---vim.api.nvim_set_keymap("n", "<F6>", "<cmd>OverseerRun<cr>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<F5>", "<cmd>OverseerToggle<cr>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<F6>", "<cmd>OverseerRun<cr>", { noremap = true, silent = true })
 
 vim.api.nvim_set_keymap("n", "<leader>rt", "<cmd>OverseerToggle<cr>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>rr", "<cmd>OverseerRun<cr>", { noremap = true, silent = true })
