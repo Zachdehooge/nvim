@@ -27,6 +27,12 @@ map("i", "<C-x>", function()
 	require("copilot.suggestion").dismiss()
 end, { desc = "Dismiss Copilot suggestion" })
 
+vim.keymap.set("i", "<Esc>", "<Esc>", {
+  desc = "Force exit insert mode",
+  noremap = true,
+  silent = true,
+})
+
 -- Compiler mappings
 -- Open compiler
 --vim.api.nvim_set_keymap("n", "<F5>", "<cmd>OverseerToggle<cr>", { noremap = true, silent = true })
