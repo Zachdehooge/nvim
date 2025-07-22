@@ -87,3 +87,10 @@ require("overseer").setup({
 })
 
 require("lspconfig").zls.setup({})
+
+vim.api.nvim_create_autocmd("BufWritePost", {
+	pattern = "*.zig",
+	callback = function()
+		vim.cmd("silent! !zig fmt %")
+	end,
+})
