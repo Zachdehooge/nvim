@@ -50,14 +50,66 @@ local function time_component()
 	return os.date("%H:%M") -- 24-hour format like 21:45
 end
 
+-- -------------------------------------------------------------------- --
+-- 3.  WakaTime component for today's coding time
+-- -------------------------------------------------------------------- --
+
+-- Initialize only once
+if not vim.g._wakatime_timer_started then
+	vim.g._wakatime_today = "📊 ⏳"
+
+	local function update_wakatime()
+		vim.fn.jobstart({ "/Users/zach/.wakatime/wakatime-cli", "--today" }, {
+			stdout_buffered = true,
+			on_stdout = function(_, data)
+				local output = vim.tbl_filter(function(line)
+					return line and line ~= ""
+				end, data or {})
+				if #output > 0 then
+					vim.g._wakatime_today = "Coding Today: " .. output[1] .. " "
+				else
+					vim.g._wakatime_today = "📊 no data"
+				end
+				vim.schedule(function()
+					vim.cmd("redrawstatus!")
+				end)
+			end,
+
+			on_stderr = function(_, err)
+				local filtered = vim.tbl_filter(function(line)
+					return line ~= nil and line ~= ""
+				end, err or {})
+				if #filtered > 0 then
+					print("WakaTime STDERR:", table.concat(filtered, "\n"))
+					vim.g._wakatime_today = "📊 error"
+				end
+				-- else do nothing, no error
+			end,
+
+			env = { HOME = os.getenv("HOME") },
+		})
+	end
+
+	-- Start and refresh every 60 seconds
+	local wakatime_timer = vim.loop.new_timer()
+	wakatime_timer:start(0, 60000, vim.schedule_wrap(update_wakatime))
+	vim.g._wakatime_timer_started = true
+end
+
+-- Lualine component
+local function wakatime_component()
+	return vim.g._wakatime_today or ""
+end
+
 M.ui = {
 	statusline = {
 		theme = "default",
 		separator_style = "default",
-		order = { "mode", "file", "git", "%=", "time", "%=", "weather", "lsp", "cwd" },
+		order = { "mode", "file", "git", "%=", "time", "%=", "wakatime", "%=", "weather", "lsp", "cwd" },
 		modules = {
 			weather = weather_component,
 			time = time_component,
+			wakatime = wakatime_component,
 		},
 	},
 }
