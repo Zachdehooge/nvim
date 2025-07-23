@@ -2,6 +2,10 @@
 -- https://github.com/NvChad/ui/blob/v2.5/lua/nvconfig.lua
 vim.g.tokyonight_style = "night"
 
+if vim.loop.os_uname().sysname ~= "Linux" then
+	wakatimepath = "/home/zach/.wakatime/wakatime-cli-linux-amd64"
+end
+
 ---@type ChadrcConfig
 local M = {}
 M.base46 = {
@@ -59,7 +63,19 @@ if not vim.g._wakatime_timer_started then
 	vim.g._wakatime_today = "📊 ⏳"
 
 	local function update_wakatime()
-		vim.fn.jobstart({ "/Users/zach/.wakatime/wakatime-cli", "--today" }, {
+		local sysname = vim.loop.os_uname().sysname
+		local wakatimepath
+
+		if sysname == "Linux" then
+			wakatimepath = "/home/zach/.wakatime/wakatime-cli"
+		elseif sysname == "Darwin" then
+			wakatimepath = "/Users/zach/.wakatime/wakatime-cli" -- adjust if x86_64
+		else
+			vim.g._wakatime_today = "📊 unsupported OS"
+			return
+		end
+
+		vim.fn.jobstart({ wakatimepath, "--today" }, {
 			stdout_buffered = true,
 			on_stdout = function(_, data)
 				local output = vim.tbl_filter(function(line)
@@ -83,7 +99,6 @@ if not vim.g._wakatime_timer_started then
 					print("WakaTime STDERR:", table.concat(filtered, "\n"))
 					vim.g._wakatime_today = "📊 error"
 				end
-				-- else do nothing, no error
 			end,
 
 			env = { HOME = os.getenv("HOME") },
