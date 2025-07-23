@@ -69,7 +69,7 @@ if not vim.g._wakatime_timer_started then
 		if sysname == "Linux" then
 			wakatimepath = "/home/zach/.wakatime/wakatime-cli"
 		elseif sysname == "Darwin" then
-			wakatimepath = "/Users/zach/.wakatime/wakatime-cli" -- adjust if x86_64
+			wakatimepath = "/Users/zach/.wakatime/wakatime-cli"
 		else
 			vim.g._wakatime_today = "📊 unsupported OS"
 			return
