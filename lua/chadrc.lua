@@ -46,13 +46,18 @@ local function weather_component()
 	return vim.g._weather_last_temp or "" -- never nil/empty
 end
 
+local function time_component()
+	return os.date("%H:%M") -- 24-hour format like 21:45
+end
+
 M.ui = {
 	statusline = {
 		theme = "default",
 		separator_style = "default",
-		order = { "mode", "file", "git", "%=", "weather", "lsp", "cwd" },
+		order = { "mode", "file", "git", "%=", "time", "%=", "weather", "lsp", "cwd" },
 		modules = {
 			weather = weather_component,
+			time = time_component,
 		},
 	},
 }

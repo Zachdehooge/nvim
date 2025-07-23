@@ -33,6 +33,8 @@ vim.keymap.set("i", "<Esc>", "<Esc>", {
 	silent = true,
 })
 
+vim.api.nvim_set_keymap("n", "<leader>ct", "<cmd>Copilot toggle<cr>", { noremap = true, silent = true })
+
 -- Open compiler
 vim.api.nvim_set_keymap("n", "<F5>", "<cmd>OverseerToggle<cr>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<F6>", "<cmd>OverseerRun<cr>", { noremap = true, silent = true })
