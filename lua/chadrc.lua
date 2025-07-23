@@ -2,10 +2,6 @@
 -- https://github.com/NvChad/ui/blob/v2.5/lua/nvconfig.lua
 vim.g.tokyonight_style = "night"
 
-if vim.loop.os_uname().sysname ~= "Linux" then
-	wakatimepath = "/home/zach/.wakatime/wakatime-cli-linux-amd64"
-end
-
 ---@type ChadrcConfig
 local M = {}
 M.base46 = {
