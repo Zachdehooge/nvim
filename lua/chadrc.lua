@@ -1,5 +1,7 @@
 -- This file needs to have same structure as nvconfig.lua
 -- https://github.com/NvChad/ui/blob/v2.5/lua/nvconfig.lua
+vim.g.tokyonight_style = "night"
+
 ---@type ChadrcConfig
 local M = {}
 M.base46 = {
@@ -7,8 +9,8 @@ M.base46 = {
 	--theme = "bearded-arc",
 	--theme = "doomchad",
 	--theme = "gruvchad",
-	--theme = "tokyonight"
-	theme = "catppuccin2",
+	theme = "tokyonight",
+	-- theme = "catppuccin2",
 	dashboard = true,
 	-- hl_override = {
 	-- 	Comment = { italic = true },
