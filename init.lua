@@ -1,5 +1,11 @@
 vim.g.base46_cache = vim.fn.stdpath("data") .. "/nvchad/base46/"
 vim.g.mapleader = " "
+
+vim.opt.wrap = true
+vim.opt.linebreak = true
+vim.opt.breakindent = true
+vim.opt.showbreak = "↪ "
+
 -- bootstrap lazy and all plugins
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
@@ -133,3 +139,5 @@ vim.diagnostic.config({
 vim.api.nvim_create_autocmd({ "BufEnter", "DiagnosticChanged", "InsertLeave" }, {
 	callback = show_helix_diagnostics,
 })
+
+vim.opt.wrap = true

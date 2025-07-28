@@ -113,15 +113,16 @@ require("lspconfig").rust_analyzer.setup({
 --   capabilities = nvlsp.capabilities,
 --
 -- FORCE disable virtual_text for all buffers on LSP attach
+
 vim.api.nvim_create_autocmd("LspAttach", {
-	callback = function(args)
+	callback = function()
 		vim.diagnostic.config({
 			virtual_text = false,
 			virtual_lines = false,
 			signs = true,
 			underline = true,
 			update_in_insert = false,
-		}, args.buf)
+		})
 	end,
 })
 
