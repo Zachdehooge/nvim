@@ -116,7 +116,7 @@ local function show_helix_diagnostics()
 
 		-- align the arrow under the error
 		local indent = string.rep(" ", col)
-		local arrow_line = indent .. " └─ " .. msg
+		local arrow_line = indent .. "└─ " .. msg
 
 		vim.api.nvim_buf_set_extmark(0, ns, line, 0, {
 			virt_lines = {
@@ -141,3 +141,28 @@ vim.api.nvim_create_autocmd({ "BufEnter", "DiagnosticChanged", "InsertLeave" }, 
 })
 
 vim.opt.wrap = true
+
+local telescope = require("telescope")
+
+telescope.setup({
+	defaults = {
+		file_ignore_patterns = {},
+		vimgrep_arguments = {
+			"rg",
+			"--color=never",
+			"--no-heading",
+			"--with-filename",
+			"--line-number",
+			"--column",
+			"--smart-case",
+			"--hidden", -- include hidden files (dotfiles)
+			"--no-ignore", -- don't respect .gitignore
+		},
+	},
+	pickers = {
+		find_files = {
+			hidden = true,
+			no_ignore = true,
+		},
+	},
+})

@@ -223,4 +223,14 @@ return {
 			})
 		end,
 	},
+
+	{
+		"nvim-tree/nvim-tree.lua",
+		opts = {
+			filters = {
+				dotfiles = false, -- Show dotfiles like `.env`
+				git_ignored = false, -- Show files in .gitignore
+			},
+		},
+	},
 }
