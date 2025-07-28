@@ -82,9 +82,9 @@ end
 -- 	end)
 -- )
 
-require("smear_cursor").setup({
-	cursor_color = "#d3cdc3",
-})
+-- require("smear_cursor").setup({
+-- 	cursor_color = "#d3cdc3",
+-- })
 
 -- require("lsp_lines").setup({})
 
