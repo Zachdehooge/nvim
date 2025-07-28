@@ -94,3 +94,42 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 		vim.cmd("silent! !zig fmt %")
 	end,
 })
+
+local ns = vim.api.nvim_create_namespace("helix_diagnostics")
+
+local function show_helix_diagnostics()
+	vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
+
+	local diagnostics = vim.diagnostic.get(0)
+	for _, d in ipairs(diagnostics) do
+		local line = d.lnum
+		local col = d.col
+		local msg = d.message:gsub("\n", " ")
+		local severity = vim.diagnostic.severity[d.severity]:gsub("^%u", string.upper)
+		local hl_group = "Diagnostic" .. severity
+
+		-- align the arrow under the error
+		local indent = string.rep(" ", col)
+		local arrow_line = indent .. " └─ " .. msg
+
+		vim.api.nvim_buf_set_extmark(0, ns, line, 0, {
+			virt_lines = {
+				{ { arrow_line, hl_group } },
+			},
+			virt_lines_above = false,
+		})
+	end
+end
+
+-- Disable virtual_text diagnostics
+vim.diagnostic.config({
+	virtual_text = false,
+	signs = true,
+	underline = true,
+	update_in_insert = false,
+})
+
+-- Update diagnostics view on relevant events
+vim.api.nvim_create_autocmd({ "BufEnter", "DiagnosticChanged", "InsertLeave" }, {
+	callback = show_helix_diagnostics,
+})
