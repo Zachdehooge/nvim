@@ -71,7 +71,7 @@ if not vim.g._wakatime_timer_started then
 			return
 		end
 
-		vim.fn.jobstart({ wakatimepath, "--today" }, {
+		vim.fn.jobstart({ "sh", "-c", wakatimepath .. " --today | sed 's/,.*//; s/ Coding//'" }, {
 			stdout_buffered = true,
 			on_stdout = function(_, data)
 				local output = vim.tbl_filter(function(line)

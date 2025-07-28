@@ -198,18 +198,20 @@ return {
 	-- 	"zbirenbaum/copilot.lua",
 	-- 	opts = {},
 	-- },
-	{
-		"zbirenbaum/copilot.lua",
-		event = "InsertEnter",
-		cmd = "Copilot",
-		build = ":Copilot auth",
-		config = function()
-			require("copilot").setup({
-				suggestion = { enabled = true, auto_trigger = true },
-				panel = { enabled = false },
-			})
-		end,
-	},
+
+	-- Uncomment below to enable Copilot
+	-- {
+	-- 	"zbirenbaum/copilot.lua",
+	-- 	event = "InsertEnter",
+	-- 	cmd = "Copilot",
+	-- 	build = ":Copilot auth",
+	-- 	config = function()
+	-- 		require("copilot").setup({
+	-- 			suggestion = { enabled = true, auto_trigger = true },
+	-- 			panel = { enabled = false },
+	-- 		})
+	-- 	end,
+	-- },
 
 	{
 		"folke/tokyonight.nvim",
