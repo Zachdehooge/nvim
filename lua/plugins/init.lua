@@ -92,7 +92,6 @@ return {
 		---@type ibl.config
 		opts = {},
 	},
-
 	-- {
 	-- 	"rachartier/tiny-inline-diagnostic.nvim",
 	-- 	event = "VeryLazy",
