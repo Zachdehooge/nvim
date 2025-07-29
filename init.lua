@@ -199,3 +199,22 @@ end)
 require("ibl").setup({
 	indent = { highlight = highlight },
 })
+
+-- require("nvim-treesitter.configs").setup({
+-- 	ensure_installed = { "zig" },
+-- 	highlight = { enable = true },
+-- 	indent = { enable = true }, -- <-- indent enabled globally or for zig
+-- })
+
+require("nvim-treesitter.configs").setup({
+	ensure_installed = { "zig" },
+	highlight = { enable = true },
+	indent = { enable = true },
+})
+
+-- Fix Treesitter highlights if the colorscheme doesn't support them
+vim.cmd([[
+  highlight link @function Function
+  highlight link @function.builtin Function
+  highlight link @keyword.function Keyword
+]])
