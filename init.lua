@@ -146,7 +146,10 @@ local telescope = require("telescope")
 
 telescope.setup({
 	defaults = {
-		file_ignore_patterns = {},
+		file_ignore_patterns = {
+			"%.git/",
+			"%.idea/",
+		},
 		vimgrep_arguments = {
 			"rg",
 			"--color=never",

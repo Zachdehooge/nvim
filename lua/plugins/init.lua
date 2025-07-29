@@ -235,8 +235,9 @@ return {
 		"nvim-tree/nvim-tree.lua",
 		opts = {
 			filters = {
-				dotfiles = false, -- Show dotfiles like `.env`
-				git_ignored = false, -- Show files in .gitignore
+				dotfiles = false,
+				git_ignored = false,
+				custom = { "^\\.git$", "^\\.idea$" },
 			},
 		},
 	},
