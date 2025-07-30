@@ -19,7 +19,7 @@
 
 ---
 
-## 🔹 Character & Line Motions
+## Character & Line Motions
 
 | Motion | Description |
 |--------|-------------|
@@ -34,7 +34,7 @@
 
 ---
 
-## 🔹 Word Motions
+## Word Motions
 
 | Motion | Description |
 |--------|-------------|
@@ -49,7 +49,7 @@
 
 ---
 
-## 🔹 Paragraph & Sentence Motions
+## Paragraph & Sentence Motions
 
 | Motion | Description |
 |--------|-------------|
@@ -60,7 +60,7 @@
 
 ---
 
-## 🔹 Scrolling
+## Scrolling
 
 | Motion | Description |
 |--------|-------------|
@@ -74,7 +74,7 @@
 
 ---
 
-## 🔹 Search Motions
+## Search Motions
 
 | Motion | Description |
 |--------|-------------|
@@ -89,7 +89,7 @@
 
 ---
 
-## 🔹 Mark and Jump Motions
+## Mark and Jump Motions
 
 | Motion | Description |
 |--------|-------------|
@@ -104,7 +104,7 @@
 
 ---
 
-## 🔹 Visual Line/Block Motions
+## Visual Line/Block Motions
 
 | Motion | Description |
 |--------|-------------|
@@ -114,7 +114,7 @@
 
 ---
 
-## 🔹 Miscellaneous Motions
+## Miscellaneous Motions
 
 | Motion | Description |
 |--------|-------------|
