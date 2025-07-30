@@ -17,8 +17,6 @@
   
 ![image](https://github.com/user-attachments/assets/dbbcb367-464f-4407-b89f-83e79b6be0ee)
 
-Neovim motions move the cursor. You can use them alone (for navigation) or with operators like `d`, `y`, `c`, etc.
-
 ---
 
 ## 🔹 Character & Line Motions
