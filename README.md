@@ -14,11 +14,14 @@
 * `f5` - overseertoggle
 * `f6` - overseerrun
 * `:%s/old_word/new_word/g` - find and replace all
-  
-![image](https://github.com/user-attachments/assets/dbbcb367-464f-4407-b89f-83e79b6be0ee)
-
 ---
-
+* `gpd` - Go to definition preview
+* `gpt` - Go to type definition preview
+* `gpi` - Go to implementation preview
+* `gpD` - Go to declaration preview
+* `gP`  - Close all preview windows
+* `gpr` - Preview references
+---
 ## Character & Line Motions
 
 | Motion | Description |
