@@ -221,14 +221,3 @@ vim.cmd([[
   highlight link @function.builtin Function
   highlight link @keyword.function Keyword
 ]])
-
-local osc52 = require("osc52")
-
-vim.api.nvim_create_autocmd("TextYankPost", {
-	callback = function()
-		if vim.v.event.operator == "y" then
-			local text = table.concat(vim.v.event.regcontents, "\n")
-			osc52.copy(text)
-		end
-	end,
-})

@@ -124,12 +124,4 @@ M.ui = {
 		},
 	},
 }
-
-function M.copy(data)
-	local b64 = vim.fn.system("base64", data)
-	b64 = b64:gsub("%s+", "") -- remove newlines
-	local osc52_seq = "\27]52;c;" .. b64 .. "\7"
-	vim.fn.chansend(vim.api.nvim_get_chaninfo(0).id, osc52_seq)
-end
-
 return M
