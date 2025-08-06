@@ -14,6 +14,9 @@
 * `f5` - overseertoggle
 * `f6` - overseerrun
 * `:%s/old_word/new_word/g` - find and replace all
+* `<C-z>` - Take nvim to the background - use `fg` to bring back to foreground
+* `<ZZ>` - Save and quit
+* `<ZQ>` - Quit and do not save
 ---
 * `gpd` - Go to definition preview
 * `gpt` - Go to type definition preview
