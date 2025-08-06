@@ -221,3 +221,19 @@ vim.cmd([[
   highlight link @function.builtin Function
   highlight link @keyword.function Keyword
 ]])
+
+-- Function to send yanked text via Fish's osc52copy function
+local function osc52_yank()
+	local text = table.concat(vim.v.event.regcontents, "\n")
+	-- Call fish shell and pipe text to osc52copy
+	vim.fn.system('fish -c "osc52copy"', text)
+end
+
+-- Autocommand to run on every yank
+vim.api.nvim_create_autocmd("TextYankPost", {
+	callback = function()
+		if vim.v.event.operator == "y" then
+			osc52_yank()
+		end
+	end,
+})
