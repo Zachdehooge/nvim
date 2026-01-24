@@ -222,3 +222,8 @@ vim.cmd([[
   highlight link @keyword.function Keyword
 ]])
 
+-- To load the default theme (grape)
+--require("zitchdog").load()
+
+-- To load a specific theme
+--require("zitchdog").load({ variant = "pine" })
