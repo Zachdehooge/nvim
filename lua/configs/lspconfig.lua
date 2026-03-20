@@ -60,10 +60,16 @@ lspconfig.gopls.setup({
 })
 
 lspconfig.pyright.setup({
+	before_init = function(_, config)
+		local venv_path = vim.fn.getcwd() .. "/.venv/bin/python"
+		if vim.fn.executable(venv_path) == 1 then
+			config.settings.python.pythonPath = venv_path
+		end
+	end,
 	settings = {
 		python = {
 			analysis = {
-				typeCheckingMode = "off", -- can be "strict", "basic", or "off"
+				typeCheckingMode = "off",
 				autoSearchPaths = true,
 				useLibraryCodeForTypes = true,
 			},
