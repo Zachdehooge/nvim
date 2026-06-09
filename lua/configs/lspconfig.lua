@@ -42,6 +42,16 @@ lspconfig.terraformls.setup({
 	capabilities = tf_capb,
 })
 
+lspconfig.jdtls.setup({
+	on_attach = nvlsp.on_attach,
+	on_init = nvlsp.on_init,
+	capabilities = nvlsp.capabilities,
+
+	cmd = { "jdtls" },
+
+	root_dir = util.root_pattern("pom.xml", "build.gradle", "gradlew", "mvnw", ".git"),
+})
+
 lspconfig.gopls.setup({
 	on_attach = nvlsp.on_attach,
 	capabilities = nvlsp.capabilities,

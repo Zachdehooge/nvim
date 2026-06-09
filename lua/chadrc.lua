@@ -6,11 +6,12 @@ vim.g.tokyonight_style = "night"
 local M = {}
 M.base46 = {
 	--theme = "cappuccin2",
-	theme = "bearded-arc",
+	--theme = "bearded-arc",
+	theme = "ayu_dark",
 	--theme = "doomchad",
 	--theme = "gruvchad",
-	-- theme = "tokyonight",
-	-- theme = "catppuccin2",
+	--theme = "tokyonight",
+	--theme = "catppuccin2",
 	dashboard = true,
 	-- hl_override = {
 	-- 	Comment = { italic = true },
