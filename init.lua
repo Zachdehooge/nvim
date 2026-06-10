@@ -234,28 +234,28 @@ vim.g.clipboard = {
 	},
 }
 
-local save_timer = vim.loop.new_timer()
-
-local function autosave()
-	if vim.bo.modified and vim.fn.expand("%") ~= "" then
-		vim.cmd("silent! write")
-		print("Auto-saved buffer")
-	end
-end
-
-local function reset_timer()
-	save_timer:stop()
-	save_timer:start(
-		2000, -- wait 2 seconds of inactivity (change this)
-		0,
-		vim.schedule_wrap(autosave)
-	)
-end
-
--- Trigger on typing or cursor movement
-vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "CursorMoved", "CursorMovedI" }, {
-	callback = reset_timer,
-})
+-- local save_timer = vim.loop.new_timer()
+--
+-- local function autosave()
+-- 	if vim.bo.modified and vim.fn.expand("%") ~= "" then
+-- 		vim.cmd("silent! write")
+-- 		print("Auto-saved buffer")
+-- 	end
+-- end
+--
+-- local function reset_timer()
+-- 	save_timer:stop()
+-- 	save_timer:start(
+-- 		10000, -- wait 2 seconds of inactivity (change this)
+-- 		0,
+-- 		vim.schedule_wrap(autosave)
+-- 	)
+-- end
+--
+-- -- Trigger on typing or cursor movement
+-- vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "CursorMoved", "CursorMovedI" }, {
+-- 	callback = reset_timer,
+-- })
 
 -- To load the default theme (grape)
 --require("zitchdog").load()
