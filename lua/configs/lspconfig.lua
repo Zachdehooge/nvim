@@ -90,6 +90,16 @@ vim.lsp.config("rust_analyzer", {
 })
 vim.lsp.enable("rust_analyzer")
 
+require("mason-lspconfig").setup({
+    ensure_installed = { "clangd" },
+    handlers = {
+        function(server_name)
+            require("lspconfig")[server_name].setup({})
+        end,
+    },
+})
+vim.lsp.enable("clangd")
+
 -- FORCE disable virtual_text for all buffers on LSP attach
 vim.api.nvim_create_autocmd("LspAttach", {
 	callback = function()

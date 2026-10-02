@@ -98,6 +98,28 @@ return {
 		---@type ibl.config
 		opts = {},
 	},
+
+  {
+  "rmagatti/goto-preview",
+  event = "LspAttach",
+  opts = {
+    default_mappings = false,
+    width = 100,
+    height = 20,
+    border = { "↖", "─", "┐", "│", "┘", "─", "└", "│" },
+  },
+  config = function(_, opts)
+    require("goto-preview").setup(opts)
+    local gp = require("goto-preview")
+    local map = vim.keymap.set
+    map("n", "gpd", gp.goto_preview_definition, { desc = "Preview definition" })
+    map("n", "gpt", gp.goto_preview_type_definition, { desc = "Preview type definition" })
+    map("n", "gpi", gp.goto_preview_implementation, { desc = "Preview implementation" })
+    map("n", "gpr", gp.goto_preview_references, { desc = "Preview references" })
+    map("n", "gP", gp.close_all_win, { desc = "Close preview windows" })
+  end,
+  },
+
 	-- {
 	-- 	"rachartier/tiny-inline-diagnostic.nvim",
 	-- 	event = "VeryLazy",
