@@ -26,6 +26,12 @@ return {
 	},
 
 	{
+		"nvim-treesitter/nvim-treesitter",
+		branch = "master",
+		build = ":TSUpdate",
+	},
+
+	{
 		"stevearc/conform.nvim",
 		opts = {
 			formatters_by_ft = {

@@ -92,7 +92,7 @@ require("overseer").setup({
 	templates = { "builtin", "user.go_run", "user.zig_run", "user.zigbuild_run" },
 })
 
-require("lspconfig").zls.setup({})
+vim.lsp.enable("zls")
 
 vim.api.nvim_create_autocmd("BufWritePost", {
 	pattern = "*.zig",
