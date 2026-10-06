@@ -16,6 +16,9 @@ return {
 			-- Register the save‑popup autocmd **here** so it only runs once
 			vim.api.nvim_create_autocmd("BufWritePost", {
 				callback = function(args)
+					if vim.g.auto_save_in_progress then
+						return
+					end
 					local file = vim.fn.fnamemodify(args.file, ":.")
 					notify("Saved " .. file, "info", { title = "File Save" })
 				end,
