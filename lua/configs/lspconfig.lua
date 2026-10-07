@@ -37,8 +37,11 @@ vim.lsp.config("jdtls", {
 	on_attach = nvlsp.on_attach,
 	on_init = nvlsp.on_init,
 	capabilities = nvlsp.capabilities,
-	cmd = { "jdtls" },
-	root_dir = util.root_pattern("pom.xml", "build.gradle", "gradlew", "mvnw", ".git"),
+	-- use ~/.local/share/jdtls (not mason's copy) with a per-project workspace
+	cmd = function(dispatchers, config)
+		local data_dir = vim.fn.stdpath("cache") .. "/jdtls/workspace/" .. vim.fn.fnamemodify(config.root_dir or "default", ":p:h:t")
+		return vim.lsp.rpc.start({ vim.fn.expand("~/.local/share/jdtls/bin/jdtls"), "-data", data_dir }, dispatchers)
+	end,
 })
 vim.lsp.enable("jdtls")
 

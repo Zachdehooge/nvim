@@ -42,46 +42,163 @@ vim.api.nvim_set_keymap("n", "<F6>", "<cmd>OverseerRun<cr>", { noremap = true, s
 vim.api.nvim_set_keymap("n", "<leader>rt", "<cmd>OverseerToggle<cr>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>rr", "<cmd>OverseerRun<cr>", { noremap = true, silent = true })
 
--- CMake build / build & run (same as Doom's SPC r b / SPC r c)
-local function cmake_root()
+-- Build / build & run (same as Doom's SPC r b / SPC r c)
+-- Picks CMake, Maven or Python based on the current filetype, falling back to
+-- the nearest project marker file.
+local function buf_dir()
 	local start = vim.fs.dirname(vim.api.nvim_buf_get_name(0))
 	if start == nil or start == "" or start == "." then
 		start = vim.fn.getcwd()
 	end
-	-- Top-most CMakeLists.txt (subdirectories can have their own)
-	local found = vim.fs.find("CMakeLists.txt", { upward = true, path = start, limit = math.huge })
+	return start
+end
+
+-- Top-most match (CMake subdirectories can have their own CMakeLists.txt)
+local function find_root(markers, topmost)
+	local found = vim.fs.find(markers, { upward = true, path = buf_dir(), limit = topmost and math.huge or 1 })
 	if #found == 0 then
 		return nil
 	end
 	return vim.fs.dirname(found[#found])
 end
 
-local function cmake_task(run)
-	local root = cmake_root()
-	if not root then
-		vim.notify("No CMakeLists.txt found above this file", vim.log.levels.ERROR)
-		return
-	end
+local function read(path)
+	return table.concat(vim.fn.readfile(path), "\n")
+end
+
+local function cmake_cmd(root, run)
 	local cmd = vim.fn.isdirectory(root .. "/build") == 1 and "cmake --build build"
 		or "cmake -B build && cmake --build build && ln -sf build/compile_commands.json compile_commands.json"
 	if run then
-		local text = table.concat(vim.fn.readfile(root .. "/CMakeLists.txt"), "\n")
-		local target = text:match("add_executable%(%s*([^%s%)]+)")
+		local target = read(root .. "/CMakeLists.txt"):match("add_executable%(%s*([^%s%)]+)")
 		if not target then
-			vim.notify("No add_executable() found in CMakeLists.txt", vim.log.levels.ERROR)
-			return
+			return nil, "No add_executable() found in CMakeLists.txt"
 		end
 		cmd = cmd .. " && ./build/" .. target
+	end
+	return cmd
+end
+
+-- "com.example.App" if the file declares a main method, else nil
+local function java_main_class(path)
+	local ok, lines = pcall(vim.fn.readfile, path)
+	if not ok then
+		return nil
+	end
+	local text = table.concat(lines, "\n")
+	if not text:match("static%s+void%s+main%s*%(") and not text:match("void%s+main%s*%(%s*%)") then
+		return nil
+	end
+	local class = vim.fn.fnamemodify(path, ":t:r")
+	local pkg = text:match("\n%s*package%s+([%w_.]+)%s*;") or text:match("^%s*package%s+([%w_.]+)%s*;")
+	return pkg and (pkg .. "." .. class) or class
+end
+
+local function maven_cmd(root, run)
+	if not run then
+		return "mvn compile"
+	end
+	local cmd = "mvn -q compile exec:java"
+	-- Respect an exec-maven-plugin <mainClass> in the pom; otherwise infer it
+	if not read(root .. "/pom.xml"):match("<mainClass>") then
+		local main = java_main_class(vim.api.nvim_buf_get_name(0))
+		if not main then
+			local files = vim.fs.find(function(name)
+				return name:match("%.java$")
+			end, { path = root .. "/src/main/java", type = "file", limit = math.huge })
+			for _, f in ipairs(files) do
+				main = java_main_class(f)
+				if main then
+					break
+				end
+			end
+		end
+		if not main then
+			return nil, "No main class found (set <mainClass> in pom.xml or open the main file)"
+		end
+		cmd = cmd .. " -Dexec.mainClass=" .. main
+	end
+	return cmd
+end
+
+local function python_cmd(root, run)
+	local python = "python3"
+	for _, venv in ipairs({ ".venv", "venv" }) do
+		if vim.fn.executable(root .. "/" .. venv .. "/bin/python") == 1 then
+			python = root .. "/" .. venv .. "/bin/python"
+			break
+		end
+	end
+	local file = vim.api.nvim_buf_get_name(0)
+	if vim.bo.filetype ~= "python" then
+		file = root .. "/main.py"
+		if vim.fn.filereadable(file) == 0 then
+			return nil, "Not in a Python file and no main.py in " .. root
+		end
+	end
+	return vim.fn.shellescape(python) .. (run and " " or " -m py_compile ") .. vim.fn.shellescape(file)
+end
+
+local project_types = {
+	cmake = {
+		markers = { "CMakeLists.txt" },
+		topmost = true,
+		filetypes = { c = true, cpp = true, cmake = true },
+		cmd = cmake_cmd,
+	},
+	maven = {
+		markers = { "pom.xml" },
+		filetypes = { java = true },
+		cmd = maven_cmd,
+		errorformat = "[ERROR] %f:[%l\\,%c] %m,[WARNING] %f:[%l\\,%c] %m",
+	},
+	python = {
+		markers = { "pyproject.toml", "setup.py", "requirements.txt", ".git" },
+		filetypes = { python = true },
+		cmd = python_cmd,
+		errorformat = '%*\\sFile "%f"\\, line %l%.%#',
+	},
+}
+
+local function detect_project()
+	for name, p in pairs(project_types) do
+		if p.filetypes[vim.bo.filetype] then
+			return name, p, find_root(p.markers, p.topmost) or (name == "python" and buf_dir() or nil)
+		end
+	end
+	-- Unknown filetype: use whichever marker is closest to the buffer
+	local best, best_len
+	for name, p in pairs(project_types) do
+		local root = name ~= "python" and find_root(p.markers, p.topmost)
+		if root and (not best_len or #root > best_len) then
+			best, best_len = { name, p, root }, #root
+		end
+	end
+	if best then
+		return unpack(best)
+	end
+end
+
+local function project_task(run)
+	local name, p, root = detect_project()
+	if not root then
+		vim.notify("No CMake, Maven or Python project found for this buffer", vim.log.levels.ERROR)
+		return
+	end
+	local cmd, err = p.cmd(root, run)
+	if not cmd then
+		vim.notify(err, vim.log.levels.ERROR)
+		return
 	end
 	vim.cmd("silent! wall")
 	local overseer = require("overseer")
 	overseer
 		.new_task({
-			name = run and "cmake build & run" or "cmake build",
+			name = name .. (run and " build & run" or " build"),
 			cmd = cmd,
 			cwd = root,
 			components = {
-				{ "on_output_quickfix", set_diagnostics = true },
+				{ "on_output_quickfix", set_diagnostics = true, errorformat = p.errorformat },
 				"on_result_diagnostics",
 				"default",
 			},
@@ -91,11 +208,11 @@ local function cmake_task(run)
 end
 
 map("n", "<leader>rb", function()
-	cmake_task(false)
-end, { desc = "Build CMake project" })
+	project_task(false)
+end, { desc = "Build project (CMake/Maven/Python)" })
 map("n", "<leader>rc", function()
-	cmake_task(true)
-end, { desc = "Build & run CMake project" })
+	project_task(true)
+end, { desc = "Build & run project (CMake/Maven/Python)" })
 
 vim.keymap.set("t", "<ESC><ESC>", "<C-\\><C-n>", { silent = true })
 
