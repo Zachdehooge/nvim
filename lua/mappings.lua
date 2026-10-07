@@ -70,9 +70,15 @@ local function cmake_cmd(root, run)
 	local cmd = vim.fn.isdirectory(root .. "/build") == 1 and "cmake --build build"
 		or "cmake -B build && cmake --build build && ln -sf build/compile_commands.json compile_commands.json"
 	if run then
-		local target = read(root .. "/CMakeLists.txt"):match("add_executable%(%s*([^%s%)]+)")
+		local text = read(root .. "/CMakeLists.txt")
+		local target = text:match("add_executable%(%s*([^%s%)]+)")
 		if not target then
 			return nil, "No add_executable() found in CMakeLists.txt"
+		end
+		-- add_executable(${PROJECT_NAME} ...) names the exe after project()
+		local project = text:match("project%(%s*([^%s%)]+)")
+		if project then
+			target = target:gsub("%${PROJECT_NAME}", project)
 		end
 		cmd = cmd .. " && ./build/" .. target
 	end

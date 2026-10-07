@@ -17,21 +17,9 @@ return {
 		"vyfor/cord.nvim",
 		build = "./build",
 		event = "VeryLazy",
-		opts = {
-			display = {
-				theme = "minecraft",
-			},
-			text = {
-				editing = function(opts)
-					return string.format("Editing %s:%s:%s", opts.filename, opts.cursor_line, opts.cursor_char + 1)
-				end,
-			},
-			advanced = {
-				plugin = {
-					cursor_update = "on_hold", -- or "on_move" to update on every cursor move
-				},
-			},
-		},
+		opts = function()
+			return require("configs.cord")
+		end,
 	},
 
 	{
