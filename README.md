@@ -25,6 +25,9 @@
 * `gP`  - Close all preview windows
 * `gpr` - Preview references
 ---
+* `C-]` Make folder new root in file-tree
+* `-` Go up a directory and make new root in file-tree
+---
 ## Character & Line Motions
 
 | Motion | Description |
