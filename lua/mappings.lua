@@ -45,7 +45,33 @@ vim.api.nvim_set_keymap("n", "<leader>rr", "<cmd>OverseerRun<cr>", { noremap = t
 -- Build / build & run (same as Doom's SPC r b / SPC r c)
 -- Picks CMake, Maven or Python based on the current filetype, falling back to
 -- the nearest project marker file.
+
+-- In the file tree, the node under the cursor stands in for the buffer, so you
+-- can browse into another project and build it without opening a file there.
+local function tree_node()
+	if vim.bo.filetype ~= "NvimTree" then
+		return nil
+	end
+	local node = require("nvim-tree.api").tree.get_node_under_cursor()
+	if not node or not node.absolute_path then
+		return nil
+	end
+	return node.absolute_path, node.type == "directory"
+end
+
+local function context_file()
+	local path, is_dir = tree_node()
+	if path then
+		return not is_dir and path or nil
+	end
+	return vim.api.nvim_buf_get_name(0)
+end
+
 local function buf_dir()
+	local path, is_dir = tree_node()
+	if path then
+		return is_dir and path or vim.fs.dirname(path)
+	end
 	local start = vim.fs.dirname(vim.api.nvim_buf_get_name(0))
 	if start == nil or start == "" or start == "." then
 		start = vim.fn.getcwd()
@@ -107,7 +133,7 @@ local function maven_cmd(root, run)
 	local cmd = "mvn -q compile exec:java"
 	-- Respect an exec-maven-plugin <mainClass> in the pom; otherwise infer it
 	if not read(root .. "/pom.xml"):match("<mainClass>") then
-		local main = java_main_class(vim.api.nvim_buf_get_name(0))
+		local main = context_file() and java_main_class(context_file())
 		if not main then
 			local files = vim.fs.find(function(name)
 				return name:match("%.java$")
@@ -135,8 +161,8 @@ local function python_cmd(root, run)
 			break
 		end
 	end
-	local file = vim.api.nvim_buf_get_name(0)
-	if vim.bo.filetype ~= "python" then
+	local file = context_file() or ""
+	if not file:match("%.py$") then
 		file = root .. "/main.py"
 		if vim.fn.filereadable(file) == 0 then
 			return nil, "Not in a Python file and no main.py in " .. root
