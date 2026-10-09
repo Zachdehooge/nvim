@@ -178,6 +178,28 @@ local function python_cmd(root, run)
 	return vim.fn.shellescape(python) .. (run and " " or " -m py_compile ") .. vim.fn.shellescape(file)
 end
 
+-- Nearest Cargo.toml is the package; the workspace root (where rustc's
+-- relative paths start) is the top-most Cargo.toml with a [workspace] table
+local function cargo_workspace_root(root)
+	local found = vim.fs.find("Cargo.toml", { upward = true, path = root, limit = math.huge })
+	for i = #found, 1, -1 do
+		if ("\n" .. read(found[i])):match("\n%s*%[workspace%]") then
+			return vim.fs.dirname(found[i])
+		end
+	end
+	return root
+end
+
+local function cargo_cmd(root, run)
+	if not run then
+		return "cargo build"
+	end
+	-- src/bin/foo.rs or src/bin/foo/main.rs: run that binary
+	local file = context_file() or ""
+	local bin = file:match("/src/bin/([^/]+)%.rs$") or file:match("/src/bin/([^/]+)/main%.rs$")
+	return "cargo run" .. (bin and " --bin " .. vim.fn.shellescape(bin) or "")
+end
+
 local project_types = {
 	cmake = {
 		markers = { "CMakeLists.txt" },
@@ -198,6 +220,23 @@ local project_types = {
 		filetypes = { java = true, kotlin = true, groovy = true },
 		cmd = gradle_cmd,
 		errorformat = "%f:%l: error: %m,%f:%l: warning: %m,e: file://%f:%l:%c %m,w: file://%f:%l:%c %m",
+	},
+	cargo = {
+		markers = { "Cargo.toml" },
+		filetypes = { rust = true, toml = true },
+		cmd = cargo_cmd,
+		file_root = cargo_workspace_root,
+		errorformat = table.concat({
+			"%-Gerror: could not compile%.%#",
+			"%-Gwarning: `%.%#` generated%.%#",
+			"%-G%.%#warning%.%# emitted",
+			"%Eerror[E%n]: %m",
+			"%Eerror: %m",
+			"%Wwarning: %m",
+			"%C %#--> %f:%l:%c",
+			"%Ethread %.%# panicked at %f:%l:%c:",
+			"%-G%.%#",
+		}, ","),
 	},
 	python = {
 		markers = { "pyproject.toml", "setup.py", "requirements.txt", ".git" },
@@ -242,7 +281,7 @@ end
 local function project_task(run)
 	local name, p, root = detect_project()
 	if not root then
-		vim.notify("No CMake, Maven, Gradle or Python project found for this buffer", vim.log.levels.ERROR)
+		vim.notify("No CMake, Maven, Gradle, Cargo or Python project found for this buffer", vim.log.levels.ERROR)
 		return
 	end
 	local cmd, err = p.cmd(root, run)
@@ -258,7 +297,12 @@ local function project_task(run)
 			cmd = cmd,
 			cwd = root,
 			components = {
-				{ "on_output_quickfix", set_diagnostics = true, errorformat = p.errorformat },
+				{
+					"on_output_quickfix",
+					set_diagnostics = true,
+					errorformat = p.errorformat,
+					relative_file_root = p.file_root and p.file_root(root),
+				},
 				"on_result_diagnostics",
 				"default",
 			},
@@ -269,10 +313,10 @@ end
 
 map("n", "<leader>rb", function()
 	project_task(false)
-end, { desc = "Build project (CMake/Maven/Gradle/Python)" })
+end, { desc = "Build project (CMake/Maven/Gradle/Cargo/Python)" })
 map("n", "<leader>rc", function()
 	project_task(true)
-end, { desc = "Build & run project (CMake/Maven/Gradle/Python)" })
+end, { desc = "Build & run project (CMake/Maven/Gradle/Cargo/Python)" })
 
 vim.keymap.set("t", "<ESC><ESC>", "<C-\\><C-n>", { silent = true })
 
