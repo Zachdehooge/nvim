@@ -43,7 +43,7 @@ vim.api.nvim_set_keymap("n", "<leader>rt", "<cmd>OverseerToggle<cr>", { noremap 
 vim.api.nvim_set_keymap("n", "<leader>rr", "<cmd>OverseerRun<cr>", { noremap = true, silent = true })
 
 -- Build / build & run (same as Doom's SPC r b / SPC r c)
--- Picks CMake, Maven or Python based on the current filetype, falling back to
+-- Picks CMake, Maven, Gradle or Python based on the current filetype, falling back to
 -- the nearest project marker file.
 
 -- In the file tree, the node under the cursor stands in for the buffer, so you
@@ -153,6 +153,13 @@ local function maven_cmd(root, run)
 	return cmd
 end
 
+-- Uses the wrapper when present. Multi-project builds run every subproject
+-- that applies the `application` plugin, from that subproject's directory.
+local function gradle_cmd(root, run)
+	local gradle = vim.fn.executable(root .. "/gradlew") == 1 and "./gradlew" or "gradle"
+	return gradle .. " --console=plain " .. (run and "run" or "classes")
+end
+
 local function python_cmd(root, run)
 	local python = "python3"
 	for _, venv in ipairs({ ".venv", "venv" }) do
@@ -184,6 +191,14 @@ local project_types = {
 		cmd = maven_cmd,
 		errorformat = "[ERROR] %f:[%l\\,%c] %m,[WARNING] %f:[%l\\,%c] %m",
 	},
+	gradle = {
+		-- Top-most so a subproject's build.gradle resolves to the root build
+		markers = { "settings.gradle", "settings.gradle.kts", "build.gradle", "build.gradle.kts" },
+		topmost = true,
+		filetypes = { java = true, kotlin = true, groovy = true },
+		cmd = gradle_cmd,
+		errorformat = "%f:%l: error: %m,%f:%l: warning: %m,e: file://%f:%l:%c %m,w: file://%f:%l:%c %m",
+	},
 	python = {
 		markers = { "pyproject.toml", "setup.py", "requirements.txt", ".git" },
 		filetypes = { python = true },
@@ -192,16 +207,11 @@ local project_types = {
 	},
 }
 
-local function detect_project()
-	for name, p in pairs(project_types) do
-		if p.filetypes[vim.bo.filetype] then
-			return name, p, find_root(p.markers, p.topmost) or (name == "python" and buf_dir() or nil)
-		end
-	end
-	-- Unknown filetype: use whichever marker is closest to the buffer
+-- Whichever project's marker is closest to the buffer (deepest root wins)
+local function closest_project(filter)
 	local best, best_len
 	for name, p in pairs(project_types) do
-		local root = name ~= "python" and find_root(p.markers, p.topmost)
+		local root = filter(name, p) and find_root(p.markers, p.topmost)
 		if root and (not best_len or #root > best_len) then
 			best, best_len = { name, p, root }, #root
 		end
@@ -211,10 +221,28 @@ local function detect_project()
 	end
 end
 
+local function detect_project()
+	local ft = vim.bo.filetype
+	if ft == "python" then
+		return "python", project_types.python, find_root(project_types.python.markers) or buf_dir()
+	end
+	-- Several build tools can share a filetype (Java: Maven or Gradle)
+	local name, p, root = closest_project(function(_, p)
+		return p.filetypes[ft]
+	end)
+	if root then
+		return name, p, root
+	end
+	-- Unknown filetype (or no matching build file): use any marker
+	return closest_project(function(n)
+		return n ~= "python"
+	end)
+end
+
 local function project_task(run)
 	local name, p, root = detect_project()
 	if not root then
-		vim.notify("No CMake, Maven or Python project found for this buffer", vim.log.levels.ERROR)
+		vim.notify("No CMake, Maven, Gradle or Python project found for this buffer", vim.log.levels.ERROR)
 		return
 	end
 	local cmd, err = p.cmd(root, run)
@@ -241,10 +269,10 @@ end
 
 map("n", "<leader>rb", function()
 	project_task(false)
-end, { desc = "Build project (CMake/Maven/Python)" })
+end, { desc = "Build project (CMake/Maven/Gradle/Python)" })
 map("n", "<leader>rc", function()
 	project_task(true)
-end, { desc = "Build & run project (CMake/Maven/Python)" })
+end, { desc = "Build & run project (CMake/Maven/Gradle/Python)" })
 
 vim.keymap.set("t", "<ESC><ESC>", "<C-\\><C-n>", { silent = true })
 

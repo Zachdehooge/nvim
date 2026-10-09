@@ -82,6 +82,31 @@ vim.lsp.config("pyright", {
 })
 vim.lsp.enable("pyright")
 
+vim.lsp.config("pylsp", {
+	on_attach = nvlsp.on_attach,
+	on_init = nvlsp.on_init,
+	capabilities = nvlsp.capabilities,
+	settings = {
+		pylsp = {
+			plugins = {
+				-- warnings to omit
+				pycodestyle = {
+					ignore = { "E501", "W503", "E203", "W293", "E303", "E112", "W291", "E302" },
+					maxLineLength = 120,
+				},
+				pyflakes = { enabled = true },
+				mccabe = { enabled = false },
+				-- turn off linters you don't use
+				pylint = { enabled = false },
+				flake8 = { enabled = false },
+				autopep8 = { enabled = false },
+				yapf = { enabled = false },
+			},
+		},
+	},
+})
+vim.lsp.enable("pylsp")
+
 vim.lsp.config("rust_analyzer", {
 	settings = {
 		["rust-analyzer"] = {

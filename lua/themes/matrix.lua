@@ -1,0 +1,127 @@
+-- Matrix: AMOLED black + phosphor green, ported from dotfiles/nvim/colors/matrix.lua
+
+local M = {}
+
+M.base_30 = {
+	white = "#d0d8d0",
+	darker_black = "#000000",
+	black = "#000000", -- nvim bg
+	black2 = "#011508",
+	one_bg = "#03240d",
+	one_bg2 = "#063d16",
+	one_bg3 = "#0a4f1d",
+	grey = "#0b6b26",
+	grey_fg = "#4e5a55",
+	grey_fg2 = "#5e6a65",
+	light_grey = "#6e7681",
+	red = "#ff3b3b",
+	baby_pink = "#ff79c6",
+	pink = "#ff79c6",
+	line = "#063d16", -- for lines like vertsplit
+	green = "#00ff41",
+	vibrant_green = "#4dff88",
+	blue = "#61afef",
+	nord_blue = "#20c84a",
+	yellow = "#e6db74",
+	sun = "#ffb000",
+	purple = "#c792ea",
+	dark_purple = "#a87fd0",
+	teal = "#159a38",
+	orange = "#ffa066",
+	cyan = "#56d4dd",
+	statusline_bg = "#011508",
+	lightbg = "#03240d",
+	pmenu_bg = "#20c84a",
+	folder_bg = "#7dffa0",
+}
+
+M.base_16 = {
+	base00 = "#000000",
+	base01 = "#011508",
+	base02 = "#03240d",
+	base03 = "#6e7681",
+	base04 = "#0b6b26",
+	base05 = "#d0d8d0",
+	base06 = "#c0ffd0",
+	base07 = "#e0ffe8",
+	base08 = "#9cdcfe",
+	base09 = "#c792ea",
+	base0A = "#56d4dd",
+	base0B = "#e6db74",
+	base0C = "#ffa066",
+	base0D = "#61afef",
+	base0E = "#00ff41",
+	base0F = "#8b949e",
+}
+
+local c = M.base_30
+local b = M.base_16
+
+M.polish_hl = {
+	defaults = {
+		Comment = { fg = b.base03, italic = true },
+		CursorLine = { bg = b.base01 },
+		CursorLineNr = { fg = c.green, bold = true },
+		LineNr = { fg = c.grey },
+		Visual = { bg = c.one_bg2 },
+		Search = { fg = c.black, bg = c.folder_bg },
+		IncSearch = { fg = c.black, bg = c.green, bold = true },
+		MatchParen = { fg = b.base07, bg = c.one_bg2, bold = true },
+		FloatBorder = { fg = c.teal },
+		WinSeparator = { fg = c.line },
+		Title = { fg = c.green, bold = true },
+		Directory = { fg = c.folder_bg },
+	},
+	syntax = {
+		Identifier = { fg = b.base05 },
+		Statement = { fg = c.green, bold = true },
+		Conditional = { fg = c.green, bold = true },
+		Repeat = { fg = c.green, bold = true },
+		Keyword = { fg = c.green, bold = true },
+		StorageClass = { fg = c.green },
+		Label = { fg = c.orange },
+		Operator = { fg = b.base0F },
+		PreProc = { fg = c.pink },
+		Include = { fg = c.pink },
+		Define = { fg = c.pink },
+		Type = { fg = c.cyan },
+		Structure = { fg = c.cyan },
+		Tag = { fg = c.blue },
+		Boolean = { fg = c.purple, bold = true },
+		Character = { fg = c.orange },
+		SpecialChar = { fg = c.orange },
+		Todo = { fg = c.black, bg = c.sun, bold = true },
+	},
+	treesitter = {
+		["@variable"] = { fg = b.base05 },
+		["@variable.builtin"] = { fg = c.red, italic = true },
+		["@variable.parameter"] = { fg = b.base05, italic = true },
+		["@variable.member"] = { fg = b.base08 },
+		["@property"] = { fg = b.base08 },
+		["@constant.builtin"] = { fg = c.purple, bold = true },
+		["@module"] = { fg = c.cyan, italic = true },
+		["@string.escape"] = { fg = c.orange, bold = true },
+		["@function.builtin"] = { fg = c.blue, italic = true },
+		["@function.macro"] = { fg = c.pink, italic = true },
+		["@constructor"] = { fg = c.cyan },
+		["@keyword"] = { fg = c.green, bold = true },
+		["@keyword.function"] = { fg = c.green, bold = true },
+		["@keyword.return"] = { fg = c.green, bold = true },
+		["@keyword.import"] = { fg = c.pink },
+		["@type.builtin"] = { fg = c.cyan, italic = true },
+		["@attribute"] = { fg = c.orange, italic = true },
+		["@punctuation.bracket"] = { fg = b.base0F },
+		["@punctuation.delimiter"] = { fg = b.base0F },
+		["@punctuation.special"] = { fg = c.orange },
+		["@tag"] = { fg = c.blue },
+		["@tag.attribute"] = { fg = b.base08, italic = true },
+		["@tag.delimiter"] = { fg = b.base0F },
+		["@markup.heading"] = { fg = c.green, bold = true },
+		["@markup.link"] = { fg = c.blue, underline = true },
+		["@markup.list"] = { fg = c.green },
+	},
+}
+
+M.type = "dark"
+
+return M
