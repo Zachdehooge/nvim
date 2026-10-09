@@ -264,6 +264,14 @@ return {
 	{
 		"nvim-tree/nvim-tree.lua",
 		opts = {
+			view = {
+				-- adaptive width: fits the longest visible entry, grows/shrinks automatically
+				width = {
+					min = 15, -- never narrower than this
+					max = -1, -- -1 = no upper limit
+					padding = 1,
+				},
+			},
 			filters = {
 				dotfiles = false,
 				git_ignored = false,
