@@ -144,6 +144,9 @@ vim.opt.wrap = true
 
 local telescope = require("telescope")
 
+-- gitignore-style list of folders/files to hide from find_files and live_grep
+local find_ignore = vim.fn.stdpath("config") .. "/.findignore"
+
 telescope.setup({
 	defaults = {
 		file_ignore_patterns = {
@@ -160,12 +163,13 @@ telescope.setup({
 			"--smart-case",
 			"--hidden", -- include hidden files (dotfiles)
 			"--no-ignore", -- don't respect .gitignore
+			"--ignore-file",
+			find_ignore,
 		},
 	},
 	pickers = {
 		find_files = {
-			hidden = true,
-			no_ignore = true,
+			find_command = { "rg", "--files", "--color=never", "--hidden", "--no-ignore", "--ignore-file", find_ignore },
 		},
 	},
 })
