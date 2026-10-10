@@ -8,15 +8,15 @@ return {
 			local dashboard = require("alpha.themes.dashboard")
 
 			dashboard.section.header.val = {
-				"             /\\",
-				"            /  \\",
-				"           /\\   \\",
-				"          /      \\",
-				"         /   ,,   \\",
-				"        /   |  |  -\\",
-				"       /_-''    ''-_\\",
-				"",
-				"       I use Arch btw ",
+				[[         (\,/)                    ]],
+				[[         oo   '''//,        _      ]],
+				[[       ,/_;~,       \,    / '      ]],
+				[[       "'   \    (    \    !       ]],
+				[[             ',|  \    |__.'       ]],
+				[[             '~  '~----''          ]],
+				[[                                   ]],
+				[[       Keith, the C++ rat          ]],
+				[[   "segfaults build character"     ]],
 			}
 
 			dashboard.section.buttons.val = {
