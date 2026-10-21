@@ -146,6 +146,10 @@ return {
 	display = {
 		theme = "minecraft",
 	},
+	assets = {
+		-- Pixel-art crab in place of the stock Minecraft "R" (served from this repo)
+		rust = "https://raw.githubusercontent.com/Zachdehooge/nvim/main/assets/cord/rust.png",
+	},
 	text = {
 		editing = function(opts)
 			return file_line("Editing", opts)

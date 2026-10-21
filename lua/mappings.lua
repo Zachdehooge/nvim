@@ -43,7 +43,7 @@ vim.api.nvim_set_keymap("n", "<leader>rt", "<cmd>OverseerToggle<cr>", { noremap 
 vim.api.nvim_set_keymap("n", "<leader>rr", "<cmd>OverseerRun<cr>", { noremap = true, silent = true })
 
 -- Build / build & run (same as Doom's SPC r b / SPC r c)
--- Picks CMake, Maven, Gradle, Cargo, Go or Python based on the current filetype, falling back to
+-- Picks CMake, Maven, Gradle, Cargo, Go, Zig or Python based on the current filetype, falling back to
 -- the nearest project marker file.
 
 -- In the file tree, the node under the cursor stands in for the buffer, so you
@@ -219,6 +219,20 @@ local function go_cmd(root, run)
 	return "go run ."
 end
 
+-- `zig build` / `zig build run` when build.zig has a run step; otherwise
+-- builds or runs the current file on its own (single-file programs, Ziglings)
+local function zig_cmd(root, run)
+	local has_build = vim.fn.filereadable(root .. "/build.zig") == 1
+	if has_build and (not run or read(root .. "/build.zig"):match('%.step%(%s*"run"')) then
+		return run and "zig build run" or "zig build"
+	end
+	local file = context_file() or ""
+	if not file:match("%.zig$") then
+		return nil, "Not in a Zig file and no run step in " .. root .. "/build.zig"
+	end
+	return "zig " .. (run and "run " or "build-exe ") .. vim.fn.shellescape(file)
+end
+
 local project_types = {
 	cmake = {
 		markers = { "CMakeLists.txt" },
@@ -263,6 +277,12 @@ local project_types = {
 		cmd = go_cmd,
 		errorformat = "%-G#%.%#,%f:%l:%c: %m,%f:%l: %m",
 	},
+	zig = {
+		markers = { "build.zig" },
+		filetypes = { zig = true, zon = true },
+		cmd = zig_cmd,
+		errorformat = "%f:%l:%c: %trror: %m,%f:%l:%c: %tarning: %m,%-G%.%#",
+	},
 	python = {
 		markers = { "pyproject.toml", "setup.py", "requirements.txt", ".git" },
 		filetypes = { python = true },
@@ -290,6 +310,10 @@ local function detect_project()
 	if ft == "python" then
 		return "python", project_types.python, find_root(project_types.python.markers) or buf_dir()
 	end
+	-- A lone .zig file needs no build.zig
+	if ft == "zig" then
+		return "zig", project_types.zig, find_root(project_types.zig.markers) or buf_dir()
+	end
 	-- Several build tools can share a filetype (Java: Maven or Gradle)
 	local name, p, root = closest_project(function(_, p)
 		return p.filetypes[ft]
@@ -306,7 +330,7 @@ end
 local function project_task(run)
 	local name, p, root = detect_project()
 	if not root then
-		vim.notify("No CMake, Maven, Gradle, Cargo, Go or Python project found for this buffer", vim.log.levels.ERROR)
+		vim.notify("No CMake, Maven, Gradle, Cargo, Go, Zig or Python project found for this buffer", vim.log.levels.ERROR)
 		return
 	end
 	local cmd, err = p.cmd(root, run)
@@ -338,10 +362,10 @@ end
 
 map("n", "<leader>rb", function()
 	project_task(false)
-end, { desc = "Build project (CMake/Maven/Gradle/Cargo/Go/Python)" })
+end, { desc = "Build project (CMake/Maven/Gradle/Cargo/Go/Zig/Python)" })
 map("n", "<leader>rc", function()
 	project_task(true)
-end, { desc = "Build & run project (CMake/Maven/Gradle/Cargo/Go/Python)" })
+end, { desc = "Build & run project (CMake/Maven/Gradle/Cargo/Go/Zig/Python)" })
 
 vim.keymap.set("t", "<ESC><ESC>", "<C-\\><C-n>", { silent = true })
 
