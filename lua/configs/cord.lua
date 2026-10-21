@@ -149,6 +149,8 @@ return {
 	assets = {
 		-- Pixel-art crab in place of the stock Minecraft "R" (served from this repo)
 		rust = "https://raw.githubusercontent.com/Zachdehooge/nvim/main/assets/cord/rust.png",
+		-- Keith, the "unofficial" C++ rat, in place of the stock C++ icon
+		cpp = "https://raw.githubusercontent.com/Zachdehooge/nvim/main/assets/cord/cpp.png",
 	},
 	text = {
 		editing = function(opts)

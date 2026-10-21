@@ -43,7 +43,7 @@ vim.api.nvim_set_keymap("n", "<leader>rt", "<cmd>OverseerToggle<cr>", { noremap 
 vim.api.nvim_set_keymap("n", "<leader>rr", "<cmd>OverseerRun<cr>", { noremap = true, silent = true })
 
 -- Build / build & run (same as Doom's SPC r b / SPC r c)
--- Picks CMake, Maven, Gradle, Cargo, Go, Zig or Python based on the current filetype, falling back to
+-- Picks C/C++ (single file), CMake, Maven, Gradle, Cargo, Go, Zig or Python based on the current filetype, falling back to
 -- the nearest project marker file.
 
 -- In the file tree, the node under the cursor stands in for the buffer, so you
@@ -233,6 +233,43 @@ local function zig_cmd(root, run)
 	return "zig " .. (run and "run " or "build-exe ") .. vim.fn.shellescape(file)
 end
 
+-- A lone .c/.cpp file with no CMakeLists.txt: compile just that file (like
+-- `python foo.py`). The binary goes in the cache dir so nothing lands next to
+-- the source; build only compiles, so you see the warnings and errors.
+local function c_source(path)
+	local ext = (path or ""):match("%.([%w+]+)$")
+	if ext == "c" then
+		return "c"
+	elseif ext == "cpp" or ext == "cc" or ext == "cxx" or ext == "c++" or ext == "C" then
+		return "cpp"
+	end
+end
+
+local function single_c_cmd(_, run)
+	local file = context_file() or ""
+	local lang = c_source(file)
+	if not lang then
+		return nil, "Not in a C/C++ source file and no CMakeLists.txt found"
+	end
+	local out_dir = vim.fn.stdpath("cache") .. "/c_run"
+	vim.fn.mkdir(out_dir, "p")
+	-- Hash the path so same-named files in different dirs don't clobber each other
+	local exe = out_dir .. "/" .. vim.fn.fnamemodify(file, ":t:r") .. "-" .. vim.fn.sha256(file):sub(1, 8)
+	local compiler = lang == "c" and "cc -std=c17" or "c++ -std=c++20"
+	local cmd = compiler
+		.. " -Wall -Wextra -g "
+		.. vim.fn.shellescape(file)
+		.. " -o "
+		.. vim.fn.shellescape(exe)
+		.. (lang == "c" and " -lm" or "")
+	return run and (cmd .. " && " .. vim.fn.shellescape(exe)) or cmd
+end
+
+local single_c = {
+	cmd = single_c_cmd,
+	errorformat = "%f:%l:%c: %trror: %m,%f:%l:%c: %tarning: %m,%f:%l: %trror: %m,%-G%.%#",
+}
+
 local project_types = {
 	cmake = {
 		markers = { "CMakeLists.txt" },
@@ -314,6 +351,14 @@ local function detect_project()
 	if ft == "zig" then
 		return "zig", project_types.zig, find_root(project_types.zig.markers) or buf_dir()
 	end
+	-- A lone .c/.cpp file needs no CMakeLists.txt
+	if ft == "c" or ft == "cpp" or c_source(context_file()) then
+		local root = find_root(project_types.cmake.markers, true)
+		if root then
+			return "cmake", project_types.cmake, root
+		end
+		return c_source(context_file()) or ft, single_c, buf_dir()
+	end
 	-- Several build tools can share a filetype (Java: Maven or Gradle)
 	local name, p, root = closest_project(function(_, p)
 		return p.filetypes[ft]
@@ -330,7 +375,7 @@ end
 local function project_task(run)
 	local name, p, root = detect_project()
 	if not root then
-		vim.notify("No CMake, Maven, Gradle, Cargo, Go, Zig or Python project found for this buffer", vim.log.levels.ERROR)
+		vim.notify("No C/C++, CMake, Maven, Gradle, Cargo, Go, Zig or Python project found for this buffer", vim.log.levels.ERROR)
 		return
 	end
 	local cmd, err = p.cmd(root, run)
@@ -362,10 +407,10 @@ end
 
 map("n", "<leader>rb", function()
 	project_task(false)
-end, { desc = "Build project (CMake/Maven/Gradle/Cargo/Go/Zig/Python)" })
+end, { desc = "Build project (C/C++/CMake/Maven/Gradle/Cargo/Go/Zig/Python)" })
 map("n", "<leader>rc", function()
 	project_task(true)
-end, { desc = "Build & run project (CMake/Maven/Gradle/Cargo/Go/Zig/Python)" })
+end, { desc = "Build & run project (C/C++/CMake/Maven/Gradle/Cargo/Go/Zig/Python)" })
 
 vim.keymap.set("t", "<ESC><ESC>", "<C-\\><C-n>", { silent = true })
 
