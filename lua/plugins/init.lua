@@ -201,6 +201,8 @@ return {
 		},
 		opts = {
 			-- lsp_keymaps = false,
+			-- codelens.lua calls vim.lsp.codelens.enable(), which needs Neovim 0.12
+			lsp_codelens = false,
 			-- other options
 		},
 		config = function(lp, opts)
@@ -220,12 +222,8 @@ return {
 	},
 	{
 		"sphamba/smear-cursor.nvim",
-		opts = {
-			stiffness = 0.5,
-			trailing_stiffness = 0.5,
-			damping = 0.67,
-			matrix_pixel_threshold = 0.5,
-		},
+		event = "VeryLazy",
+		opts = {},
 	},
 	{
 		"stevearc/overseer.nvim",

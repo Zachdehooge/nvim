@@ -7,6 +7,8 @@ return {
 	},
 	opts = {
 		-- lsp_keymaps = false,
+		-- codelens.lua calls vim.lsp.codelens.enable(), which needs Neovim 0.12
+		lsp_codelens = false,
 		-- other options
 	},
 	config = function(lp, opts)

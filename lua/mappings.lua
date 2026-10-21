@@ -43,7 +43,7 @@ vim.api.nvim_set_keymap("n", "<leader>rt", "<cmd>OverseerToggle<cr>", { noremap 
 vim.api.nvim_set_keymap("n", "<leader>rr", "<cmd>OverseerRun<cr>", { noremap = true, silent = true })
 
 -- Build / build & run (same as Doom's SPC r b / SPC r c)
--- Picks CMake, Maven, Gradle or Python based on the current filetype, falling back to
+-- Picks CMake, Maven, Gradle, Cargo, Go or Python based on the current filetype, falling back to
 -- the nearest project marker file.
 
 -- In the file tree, the node under the cursor stands in for the buffer, so you
@@ -200,6 +200,25 @@ local function cargo_cmd(root, run)
 	return "cargo run" .. (bin and " --bin " .. vim.fn.shellescape(bin) or "")
 end
 
+-- Builds every package in the module; runs the current file's package if it
+-- is a main package, otherwise the module root
+local function go_cmd(root, run)
+	if not run then
+		return "go build ./..."
+	end
+	local file = context_file() or ""
+	if file:match("%.go$") then
+		local ok, lines = pcall(vim.fn.readfile, file)
+		if ok and ("\n" .. table.concat(lines, "\n")):match("\n%s*package%s+main%f[%W]") then
+			local rel = vim.fs.relpath(root, vim.fs.dirname(file))
+			if rel then
+				return "go run ./" .. (rel == "." and "" or rel)
+			end
+		end
+	end
+	return "go run ."
+end
+
 local project_types = {
 	cmake = {
 		markers = { "CMakeLists.txt" },
@@ -237,6 +256,12 @@ local project_types = {
 			"%Ethread %.%# panicked at %f:%l:%c:",
 			"%-G%.%#",
 		}, ","),
+	},
+	go = {
+		markers = { "go.mod" },
+		filetypes = { go = true, gomod = true, gowork = true },
+		cmd = go_cmd,
+		errorformat = "%-G#%.%#,%f:%l:%c: %m,%f:%l: %m",
 	},
 	python = {
 		markers = { "pyproject.toml", "setup.py", "requirements.txt", ".git" },
@@ -281,7 +306,7 @@ end
 local function project_task(run)
 	local name, p, root = detect_project()
 	if not root then
-		vim.notify("No CMake, Maven, Gradle, Cargo or Python project found for this buffer", vim.log.levels.ERROR)
+		vim.notify("No CMake, Maven, Gradle, Cargo, Go or Python project found for this buffer", vim.log.levels.ERROR)
 		return
 	end
 	local cmd, err = p.cmd(root, run)
@@ -313,10 +338,10 @@ end
 
 map("n", "<leader>rb", function()
 	project_task(false)
-end, { desc = "Build project (CMake/Maven/Gradle/Cargo/Python)" })
+end, { desc = "Build project (CMake/Maven/Gradle/Cargo/Go/Python)" })
 map("n", "<leader>rc", function()
 	project_task(true)
-end, { desc = "Build & run project (CMake/Maven/Gradle/Cargo/Python)" })
+end, { desc = "Build & run project (CMake/Maven/Gradle/Cargo/Go/Python)" })
 
 vim.keymap.set("t", "<ESC><ESC>", "<C-\\><C-n>", { silent = true })
 

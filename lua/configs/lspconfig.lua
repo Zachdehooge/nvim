@@ -10,7 +10,6 @@ vim.diagnostic.config({
 require("nvchad.configs.lspconfig").defaults()
 
 local nvlsp = require("nvchad.configs.lspconfig")
-local util = require("lspconfig.util")
 
 -- lsps with default config
 local servers = { "html", "cssls" }
@@ -47,10 +46,13 @@ vim.lsp.enable("jdtls")
 
 vim.lsp.config("gopls", {
 	on_attach = nvlsp.on_attach,
+	on_init = nvlsp.on_init,
 	capabilities = nvlsp.capabilities,
 	cmd = { "gopls" },
 	filetypes = { "go", "gomod", "gowork", "gotmpl" },
-	root_dir = util.root_pattern("go.work", "go.mod", ".git"),
+	-- vim.lsp.config calls root_dir(bufnr, on_dir); lspconfig.util.root_pattern
+	-- never calls on_dir, so gopls would never start. Use root_markers instead.
+	root_markers = { "go.work", "go.mod", ".git" },
 	settings = {
 		gopls = {
 			completeUnimported = true,
