@@ -152,6 +152,8 @@ return {
 		-- Keith, the "unofficial" C++ rat, in place of the stock C/C++ icons
 		c = "https://raw.githubusercontent.com/Zachdehooge/nvim/main/assets/cord/cpp.png",
 		cpp = "https://raw.githubusercontent.com/Zachdehooge/nvim/main/assets/cord/cpp.png",
+		-- Pixel-art gopher in place of the stock "GO" text icon
+		go = "https://raw.githubusercontent.com/Zachdehooge/nvim/main/assets/cord/go.png",
 	},
 	text = {
 		editing = function(opts)
