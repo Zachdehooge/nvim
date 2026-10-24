@@ -105,7 +105,8 @@ local ns = vim.api.nvim_create_namespace("helix_diagnostics")
 
 local function show_helix_diagnostics(args)
 	local bufnr = args and args.buf or vim.api.nvim_get_current_buf()
-	if not vim.api.nvim_buf_is_valid(bufnr) then
+	-- overseer can set diagnostics on listed-but-unloaded buffers (line count 0)
+	if not vim.api.nvim_buf_is_valid(bufnr) or not vim.api.nvim_buf_is_loaded(bufnr) then
 		return
 	end
 	vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
@@ -114,7 +115,7 @@ local function show_helix_diagnostics(args)
 	local diagnostics = vim.diagnostic.get(bufnr)
 	for _, d in ipairs(diagnostics) do
 		-- diagnostics can be stale (e.g. after deleting lines), so clamp
-		local line = math.min(d.lnum, line_count - 1)
+		local line = math.max(0, math.min(d.lnum, line_count - 1))
 		local col = d.col
 		local msg = d.message:gsub("\n", " ")
 		local severity = vim.diagnostic.severity[d.severity]
