@@ -101,12 +101,35 @@ local function cmake_cmd(root, run)
 		if not target then
 			return nil, "No add_executable() found in CMakeLists.txt"
 		end
+		local vars = { CMAKE_CURRENT_SOURCE_DIR = root, CMAKE_SOURCE_DIR = root }
+		-- Simple variables: set(x value) and get_filename_component(x <path> NAME)
+		for name, value in text:gmatch("set%(%s*([%w_]+)%s+([^%s%)]+)%s*%)") do
+			vars[name] = value
+		end
+		for name, path in text:gmatch("get_filename_component%(%s*([%w_]+)%s+([^%s%)]+)%s+NAME%s*%)") do
+			vars[name] = { name_of = path }
+		end
 		-- add_executable(${PROJECT_NAME} ...) names the exe after project()
 		local project = text:match("project%(%s*([^%s%)]+)")
 		if project then
-			target = target:gsub("%${PROJECT_NAME}", project)
+			vars.PROJECT_NAME = project
 		end
-		cmd = cmd .. " && ./build/" .. target
+		local function expand(s, depth)
+			return (s:gsub("%${([%w_]+)}", function(name)
+				local v = vars[name]
+				if v == nil or depth > 5 then
+					return nil
+				elseif type(v) == "table" then
+					return vim.fs.basename(expand(v.name_of, depth + 1))
+				end
+				return expand(v, depth + 1)
+			end))
+		end
+		target = expand(target, 0)
+		if target:find("${", 1, true) then
+			return nil, "Couldn't resolve executable name " .. target
+		end
+		cmd = cmd .. " && ./build/" .. vim.fn.shellescape(target)
 	end
 	return cmd
 end
@@ -245,12 +268,44 @@ local function c_source(path)
 	end
 end
 
+-- Follow local `#include "foo.h"` lines (recursively) and pick up the
+-- matching foo.c/foo.cpp next to each header, so hello.h pulls in hello.c
+local function c_sources(file)
+	local sources, seen = { file }, { [file] = true }
+	local queue = { file }
+	while #queue > 0 do
+		local path = table.remove(queue)
+		local dir = vim.fs.dirname(path)
+		local ok, lines = pcall(vim.fn.readfile, path)
+		for _, line in ipairs(ok and lines or {}) do
+			local inc = line:match('^%s*#%s*include%s*"([^"]+)"')
+			local header = inc and vim.fs.normalize(dir .. "/" .. inc)
+			if header and not seen[header] and vim.fn.filereadable(header) == 1 then
+				seen[header] = true
+				table.insert(queue, header)
+				local stem = vim.fn.fnamemodify(header, ":r")
+				for _, ext in ipairs({ "c", "cpp", "cc", "cxx" }) do
+					local src = stem .. "." .. ext
+					if not seen[src] and vim.fn.filereadable(src) == 1 then
+						seen[src] = true
+						table.insert(sources, src)
+						table.insert(queue, src)
+						break
+					end
+				end
+			end
+		end
+	end
+	return sources
+end
+
 local function single_c_cmd(_, run)
 	local file = context_file() or ""
 	local lang = c_source(file)
 	if not lang then
 		return nil, "Not in a C/C++ source file and no CMakeLists.txt found"
 	end
+	file = vim.fs.normalize(vim.fn.fnamemodify(file, ":p"))
 	local out_dir = vim.fn.stdpath("cache") .. "/c_run"
 	vim.fn.mkdir(out_dir, "p")
 	-- Hash the path so same-named files in different dirs don't clobber each other
@@ -258,7 +313,7 @@ local function single_c_cmd(_, run)
 	local compiler = lang == "c" and "cc -std=c17" or "c++ -std=c++20"
 	local cmd = compiler
 		.. " -Wall -Wextra -g "
-		.. vim.fn.shellescape(file)
+		.. table.concat(vim.tbl_map(vim.fn.shellescape, c_sources(file)), " ")
 		.. " -o "
 		.. vim.fn.shellescape(exe)
 		.. (lang == "c" and " -lm" or "")
@@ -411,6 +466,10 @@ end, { desc = "Build project (C/C++/CMake/Maven/Gradle/Cargo/Go/Zig/Python)" })
 map("n", "<leader>rc", function()
 	project_task(true)
 end, { desc = "Build & run project (C/C++/CMake/Maven/Gradle/Cargo/Go/Zig/Python)" })
+
+-- Clear stale LSP diagnostics (e.g. clangd "unused variable" that's actually used)
+map("n", "<leader>rl", "<cmd>silent! edit<cr>", { desc = "Reload buffer (recheck diagnostics)" })
+map("n", "<leader>rL", "<cmd>LspRestart<cr>", { desc = "Restart LSP" })
 
 vim.keymap.set("t", "<ESC><ESC>", "<C-\\><C-n>", { silent = true })
 

@@ -103,22 +103,28 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 
 local ns = vim.api.nvim_create_namespace("helix_diagnostics")
 
-local function show_helix_diagnostics()
-	vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
+local function show_helix_diagnostics(args)
+	local bufnr = args and args.buf or vim.api.nvim_get_current_buf()
+	if not vim.api.nvim_buf_is_valid(bufnr) then
+		return
+	end
+	vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
 
-	local diagnostics = vim.diagnostic.get(0)
+	local line_count = vim.api.nvim_buf_line_count(bufnr)
+	local diagnostics = vim.diagnostic.get(bufnr)
 	for _, d in ipairs(diagnostics) do
-		local line = d.lnum
+		-- diagnostics can be stale (e.g. after deleting lines), so clamp
+		local line = math.min(d.lnum, line_count - 1)
 		local col = d.col
 		local msg = d.message:gsub("\n", " ")
-		local severity = vim.diagnostic.severity[d.severity]:gsub("^%u", string.upper)
-		local hl_group = "Diagnostic" .. severity
+		local severity = vim.diagnostic.severity[d.severity]
+		local hl_group = "Diagnostic" .. severity:sub(1, 1) .. severity:sub(2):lower()
 
 		-- align the arrow under the error
 		local indent = string.rep(" ", col)
 		local arrow_line = indent .. "└─ " .. msg
 
-		vim.api.nvim_buf_set_extmark(0, ns, line, 0, {
+		vim.api.nvim_buf_set_extmark(bufnr, ns, line, 0, {
 			virt_lines = {
 				{ { arrow_line, hl_group } },
 			},
