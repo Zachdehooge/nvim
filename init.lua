@@ -181,8 +181,15 @@ telescope.setup({
 	},
 })
 
-require("nvim-treesitter.configs").setup({
-	highlight = { enable = true },
+-- nvim-treesitter (main branch): install parsers, then start highlighting/indent per buffer
+require("nvim-treesitter").install({ "c", "cpp", "cmake", "zig", "go", "lua", "markdown", "markdown_inline" })
+
+vim.api.nvim_create_autocmd("FileType", {
+	callback = function(args)
+		if pcall(vim.treesitter.start, args.buf) then
+			vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+		end
+	end,
 })
 
 -- require("ibl").setup()
@@ -212,18 +219,6 @@ end)
 
 require("ibl").setup({
 	indent = { highlight = highlight },
-})
-
--- require("nvim-treesitter.configs").setup({
--- 	ensure_installed = { "zig" },
--- 	highlight = { enable = true },
--- 	indent = { enable = true }, -- <-- indent enabled globally or for zig
--- })
-
-require("nvim-treesitter.configs").setup({
-	ensure_installed = { "zig" },
-	highlight = { enable = true },
-	indent = { enable = true },
 })
 
 -- Fix Treesitter highlights if the colorscheme doesn't support them

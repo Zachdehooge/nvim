@@ -15,7 +15,6 @@ return {
 
 	{
 		"vyfor/cord.nvim",
-		build = "./build",
 		event = "VeryLazy",
 		opts = function()
 			return require("configs.cord")
@@ -29,7 +28,8 @@ return {
 
 	{
 		"nvim-treesitter/nvim-treesitter",
-		branch = "master",
+		branch = "main",
+		lazy = false,
 		build = ":TSUpdate",
 	},
 
@@ -225,11 +225,6 @@ return {
 		event = { "CmdlineEnter" },
 		ft = { "go", "gomod" },
 		build = ':lua require("go.install").update_all_sync()', -- if you need to install/update all binaries
-	},
-	{
-		"sphamba/smear-cursor.nvim",
-		event = "VeryLazy",
-		opts = {},
 	},
 	{
 		"stevearc/overseer.nvim",
