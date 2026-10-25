@@ -188,6 +188,12 @@ return {
 					inc_rename = false,
 					lsp_doc_border = true,
 				},
+				views = {
+					-- hover/signature docs: cap width to a share of the screen so text wraps instead of running off-screen
+					hover = {
+						size = { max_width = "60%" },
+					},
+				},
 			})
 		end,
 	},
