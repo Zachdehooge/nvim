@@ -155,7 +155,7 @@ return {
 		-- Pixel-art gopher in place of the stock "GO" text icon
 		go = "https://raw.githubusercontent.com/Zachdehooge/nvim/main/assets/cord/go.png",
 		-- Pixel-art Duke in place of the stock Java icon
-		java = "https://raw.githubusercontent.com/Zachdehooge/nvim/main/assets/cord/java.png",
+		java = "https://raw.githubusercontent.com/Zachdehooge/nvim/main/assets/cord/java.png?v=2",
 	},
 	text = {
 		editing = function(opts)

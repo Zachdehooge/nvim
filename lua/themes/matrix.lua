@@ -1,11 +1,11 @@
--- Matrix: AMOLED black + phosphor green, ported from dotfiles/nvim/colors/matrix.lua
+-- Matrix: near-black + phosphor green, ported from dotfiles/nvim/colors/matrix.lua
 
 local M = {}
 
 M.base_30 = {
 	white = "#d0d8d0",
-	darker_black = "#000000",
-	black = "#000000", -- nvim bg
+	darker_black = "#040605",
+	black = "#080c09", -- nvim bg (near-black, faint green tint)
 	black2 = "#011508",
 	one_bg = "#03240d",
 	one_bg2 = "#063d16",
@@ -36,7 +36,7 @@ M.base_30 = {
 }
 
 M.base_16 = {
-	base00 = "#000000",
+	base00 = "#080c09",
 	base01 = "#011508",
 	base02 = "#03240d",
 	base03 = "#6e7681",
