@@ -38,8 +38,13 @@ vim.lsp.config("jdtls", {
 	capabilities = nvlsp.capabilities,
 	-- use mason's jdtls with a per-project workspace
 	cmd = function(dispatchers, config)
-		local data_dir = vim.fn.stdpath("cache") .. "/jdtls/workspace/" .. vim.fn.fnamemodify(config.root_dir or "default", ":p:h:t")
-		return vim.lsp.rpc.start({ vim.fn.stdpath("data") .. "/mason/packages/jdtls/bin/jdtls", "-data", data_dir }, dispatchers)
+		local data_dir = vim.fn.stdpath("cache")
+			.. "/jdtls/workspace/"
+			.. vim.fn.fnamemodify(config.root_dir or "default", ":p:h:t")
+		return vim.lsp.rpc.start(
+			{ vim.fn.stdpath("data") .. "/mason/packages/jdtls/bin/jdtls", "-data", data_dir },
+			dispatchers
+		)
 	end,
 })
 vim.lsp.enable("jdtls")
@@ -115,18 +120,30 @@ vim.lsp.config("rust_analyzer", {
 			inlayHints = {
 				enable = true,
 			},
+			-- Silence rustc's `unused` lint group (unused vars/imports/mut, dead_code, ...)
+			check = {
+				-- extraEnv = { RUSTFLAGS = "-A unused" },
+			},
+			-- Separate target dir so the RUSTFLAGS change doesn't invalidate normal cargo builds
+			cargo = {
+				targetDir = true,
+			},
+			-- rust-analyzer's own native unused diagnostics
+			diagnostics = {
+				disabled = { "unused_mut" },
+			},
 		},
 	},
 })
 vim.lsp.enable("rust_analyzer")
 
 require("mason-lspconfig").setup({
-    ensure_installed = { "clangd" },
-    handlers = {
-        function(server_name)
-            require("lspconfig")[server_name].setup({})
-        end,
-    },
+	ensure_installed = { "clangd" },
+	handlers = {
+		function(server_name)
+			require("lspconfig")[server_name].setup({})
+		end,
+	},
 })
 vim.lsp.enable("clangd")
 
