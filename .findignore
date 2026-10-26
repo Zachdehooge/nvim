@@ -10,3 +10,5 @@ target/
 .zig-cache/
 .settings/
 .gradle/
+cmake-build-debug/
+cmake-build-release/
