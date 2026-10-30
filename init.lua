@@ -181,15 +181,11 @@ telescope.setup({
 	},
 })
 
--- nvim-treesitter (main branch): install parsers, then start highlighting/indent per buffer
-require("nvim-treesitter").install({ "c", "cpp", "cmake", "zig", "go", "lua", "markdown", "markdown_inline" })
-
-vim.api.nvim_create_autocmd("FileType", {
-	callback = function(args)
-		if pcall(vim.treesitter.start, args.buf) then
-			vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-		end
-	end,
+-- nvim-treesitter (master branch, the main branch requires nvim 0.12+)
+require("nvim-treesitter.configs").setup({
+	ensure_installed = { "c", "cpp", "cmake", "zig", "go", "lua", "markdown", "markdown_inline" },
+	highlight = { enable = true },
+	indent = { enable = true },
 })
 
 -- require("ibl").setup()
